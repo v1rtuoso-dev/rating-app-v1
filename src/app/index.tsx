@@ -1,8 +1,8 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppButton, AppCard, SectionTitle } from '@/components/ui';
-import { theme } from '@/theme';
+import { ScrollView, Text, View } from '@/tw';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -12,27 +12,28 @@ export default function HomeScreen() {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={[styles.container, { paddingHorizontal: isLandscape ? 28 : 20, paddingVertical: isLandscape ? 20 : 24 }]}
+      className="flex-1 bg-slate-100"
+      contentContainerClassName="flex-grow justify-center w-full self-center py-6 px-5"
     >
-      <View style={[styles.heroRow, isLandscape && styles.heroRowLandscape]}>
-        <View style={styles.heroPanel}>
-          <Text style={styles.title}>Customer feedback system</Text>
-          <Text style={styles.subtitle}>A full-screen experience for guest kiosks and internal staff.</Text>
+      <View className={`w-full gap-4 ${isLandscape ? 'flex-row items-stretch' : ''}`}>
+        <View className="flex-1 justify-center min-h-[220px] p-6 rounded-2xl bg-slate-50 border border-slate-200 shadow-sm">
+          <Text className="text-3xl font-extrabold text-slate-900">Customer feedback system</Text>
+          <Text className="text-sm text-slate-500 mt-2">A full-screen experience for guest kiosks and internal staff.</Text>
         </View>
 
-        <View style={styles.actionsColumn}>
-          <AppCard style={styles.card}>
+        <View className="flex-1 gap-3">
+          <AppCard className="mb-0">
             <SectionTitle title="Choose entry point" subtitle="Launch the dedicated workflow for each audience." />
             <AppButton title="Open kiosk mode" onPress={() => router.push('/kiosk' as never)} />
             <AppButton title="Open admin mode" onPress={() => router.push('/admin' as never)} variant="secondary" />
           </AppCard>
 
-          <AppCard style={styles.card}>
+          <AppCard className="mb-0">
             <SectionTitle title="Included flows" subtitle="Built for quick interaction on a landscape tablet." />
-            <Text style={styles.listItem}>• Guest rating and feedback</Text>
-            <Text style={styles.listItem}>• Unsatisfied reasons and comments</Text>
-            <Text style={styles.listItem}>• Admin login and dashboard</Text>
-            <Text style={styles.listItem}>• Staff account overview</Text>
+            <Text className="text-slate-500 mb-1.5 text-sm">• Guest rating and feedback</Text>
+            <Text className="text-slate-500 mb-1.5 text-sm">• Unsatisfied reasons and comments</Text>
+            <Text className="text-slate-500 mb-1.5 text-sm">• Admin login and dashboard</Text>
+            <Text className="text-slate-500 mb-1.5 text-sm">• Staff account overview</Text>
           </AppCard>
         </View>
       </View>
@@ -40,53 +41,3 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: theme.colors.background,
-    justifyContent: 'center',
-    width: '100%',
-    alignSelf: 'center',
-  },
-  heroRow: {
-    width: '100%',
-    gap: theme.spacing.md,
-  },
-  heroRowLandscape: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },
-  heroPanel: {
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: 220,
-    padding: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.surface,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    boxShadow: '0 16px 40px rgba(15, 23, 42, 0.08)',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: theme.colors.text,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: theme.colors.muted,
-    marginTop: 8,
-  },
-  actionsColumn: {
-    flex: 1,
-    gap: theme.spacing.sm,
-  },
-  card: {
-    marginBottom: 0,
-  },
-  listItem: {
-    color: theme.colors.muted,
-    marginBottom: 6,
-    fontSize: 14,
-  },
-});

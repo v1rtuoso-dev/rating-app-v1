@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppButton, AppCard, SectionTitle } from '@/components/ui';
-import { theme } from '@/theme';
+import { ScrollView, Text, TextInput, View } from '@/tw';
 
 export default function AdminLoginScreen() {
   const router = useRouter();
@@ -28,18 +28,31 @@ export default function AdminLoginScreen() {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={[styles.container, { paddingHorizontal: isTablet ? 32 : theme.spacing.lg, maxWidth: isTablet ? 980 : width }]}
+      className="flex-1 bg-slate-100"
+      contentContainerClassName={`flex-grow py-6 justify-center w-full self-center ${isTablet ? 'px-8 max-w-[980px]' : 'px-6'}`}
     >
-      <View style={styles.header}>
-        <Text style={styles.title}>Admin access</Text>
-        <Text style={styles.subtitle}>Secure staff and management workspace</Text>
+      <View className="mb-6">
+        <Text className="text-3xl font-extrabold text-slate-900">Admin access</Text>
+        <Text className="text-sm text-slate-500 mt-1.5">Secure staff and management workspace</Text>
       </View>
 
-      <AppCard style={styles.card}>
+      <AppCard className="mb-4">
         <SectionTitle title="Sign in" subtitle="Use your staff account to access the admin flow." />
-        <TextInput autoCapitalize="none" value={username} onChangeText={setUsername} style={styles.input} placeholder="Username" />
-        <TextInput secureTextEntry value={password} onChangeText={setPassword} style={styles.input} placeholder="Password" />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <TextInput
+          autoCapitalize="none"
+          value={username}
+          onChangeText={setUsername}
+          className="border border-slate-200 rounded-xl p-4 mb-3 bg-white text-slate-900"
+          placeholder="Username"
+        />
+        <TextInput
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          className="border border-slate-200 rounded-xl p-4 mb-3 bg-white text-slate-900"
+          placeholder="Password"
+        />
+        {error ? <Text className="text-red-600 mb-3 text-sm">{error}</Text> : null}
         <AppButton title="Sign in" onPress={handleLogin} />
       </AppCard>
 
@@ -48,41 +61,3 @@ export default function AdminLoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: theme.colors.background,
-    paddingVertical: theme.spacing.lg,
-    justifyContent: 'center',
-    width: '100%',
-    alignSelf: 'center',
-  },
-  header: {
-    marginBottom: theme.spacing.lg,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: '800',
-    color: theme.colors.text,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: theme.colors.muted,
-    marginTop: 6,
-  },
-  card: {
-    marginBottom: theme.spacing.md,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.sm,
-    backgroundColor: theme.colors.white,
-  },
-  error: {
-    color: theme.colors.danger,
-    marginBottom: theme.spacing.sm,
-  },
-});

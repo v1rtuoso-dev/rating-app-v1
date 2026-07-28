@@ -5,6 +5,7 @@ import {
     ScrollView as RNScrollView,
     Text as RNText,
     TextInput as RNTextInput,
+    TouchableOpacity as RNTouchableOpacity,
     TouchableHighlight as RNTouchableHighlight,
     View as RNView,
     StyleSheet,
@@ -51,6 +52,13 @@ export const Pressable = (props: React.ComponentProps<typeof RNPressable> & { cl
 };
 Pressable.displayName = 'CSS(Pressable)';
 
+export const TouchableOpacity = (
+  props: React.ComponentProps<typeof RNTouchableOpacity> & { className?: string }
+) => {
+  return useCssElement(RNTouchableOpacity, props, { className: 'style' });
+};
+TouchableOpacity.displayName = 'CSS(TouchableOpacity)';
+
 export const TextInput = (props: React.ComponentProps<typeof RNTextInput> & { className?: string }) => {
   return useCssElement(RNTextInput, props, { className: 'style' });
 };
@@ -78,4 +86,4 @@ function TouchableHighlightBase(props: React.ComponentProps<typeof RNTouchableHi
 export const TouchableHighlight = (props: React.ComponentProps<typeof RNTouchableHighlight>) => {
   return useCssElement(TouchableHighlightBase, props, { className: 'style' });
 };
-TouchableHighlight.displayName = 'CSS(TouchableHighlight)';
+TouchableHighlight.displayName = 'CSS(TouchableHighlight)';
