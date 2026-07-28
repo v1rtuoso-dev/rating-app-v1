@@ -1,0 +1,96 @@
+export type Flight = {
+  id: number;
+  flightNo: string;
+  route: string;
+  flightDate: string;
+  flightTime: string;
+  status: string;
+};
+
+export type Reason = {
+  id: number;
+  label: string;
+};
+
+export type Evaluation = {
+  id: number;
+  flightNo: string;
+  counter: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+};
+
+export const mockFlights: Flight[] = [
+  {
+    id: 101,
+    flightNo: 'VN210',
+    route: 'SGN → HAN',
+    flightDate: '2026-07-28',
+    flightTime: '08:30',
+    status: 'On time',
+  },
+  {
+    id: 102,
+    flightNo: 'VN512',
+    route: 'HAN → SGN',
+    flightDate: '2026-07-28',
+    flightTime: '11:20',
+    status: 'Boarding',
+  },
+  {
+    id: 103,
+    flightNo: 'QF88',
+    route: 'SGN → BKK',
+    flightDate: '2026-07-28',
+    flightTime: '15:45',
+    status: 'Delayed',
+  },
+];
+
+export const mockReasons: Reason[] = [
+  { id: 1, label: 'Queue too long' },
+  { id: 2, label: 'Staff not helpful' },
+  { id: 3, label: 'Process unclear' },
+  { id: 4, label: 'Equipment issue' },
+  { id: 5, label: 'Language barrier' },
+];
+
+export const mockEvaluations: Evaluation[] = [
+  {
+    id: 1,
+    flightNo: 'VN210',
+    counter: 'Counter A',
+    rating: 4,
+    comment: 'Smooth check-in experience.',
+    createdAt: '08:10',
+  },
+  {
+    id: 2,
+    flightNo: 'VN512',
+    counter: 'Counter C',
+    rating: 2,
+    comment: 'Waiting time was long.',
+    createdAt: '10:35',
+  },
+  {
+    id: 3,
+    flightNo: 'QF88',
+    counter: 'Counter B',
+    rating: 3,
+    comment: 'Friendly but slightly delayed.',
+    createdAt: '14:20',
+  },
+];
+
+export function getSummaryStats() {
+  const total = mockEvaluations.length;
+  const excellent = mockEvaluations.filter((item) => item.rating >= 4).length;
+  const average = Math.round((mockEvaluations.reduce((sum, item) => sum + item.rating, 0) / total) * 10) / 10;
+
+  return {
+    total,
+    excellent,
+    average,
+  };
+}

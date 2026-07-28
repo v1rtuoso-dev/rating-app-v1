@@ -1,0 +1,141 @@
+{
+  "version": 3,
+  "skills": {
+    "expo-data-fetching": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-data-fetching/SKILL.md",
+      "skillFolderHash": "733f27a8146bffd9dfd143bea54a6da8bf81dc02",
+      "installedAt": "2026-07-28T04:02:57.762Z",
+      "updatedAt": "2026-07-28T04:02:57.762Z"
+    },
+    "expo-dev-client": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-dev-client/SKILL.md",
+      "skillFolderHash": "3338497f8926742194ae28e92d256d81c5f25d10",
+      "installedAt": "2026-07-28T04:02:57.771Z",
+      "updatedAt": "2026-07-28T04:02:57.771Z"
+    },
+    "expo-dom": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-dom/SKILL.md",
+      "skillFolderHash": "59fbcc5ea8b0daa74b392f9e019ca8983a02824f",
+      "installedAt": "2026-07-28T04:02:57.772Z",
+      "updatedAt": "2026-07-28T04:02:57.772Z"
+    },
+    "expo-examples": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-examples/SKILL.md",
+      "skillFolderHash": "2d9c985f8a2f230cfaa0eb4cded25cb5a2971282",
+      "installedAt": "2026-07-28T04:02:57.772Z",
+      "updatedAt": "2026-07-28T04:02:57.772Z"
+    },
+    "expo-module": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-module/SKILL.md",
+      "skillFolderHash": "a6bafba4c9aa9552b5be3fbd4b10e33686c7db50",
+      "installedAt": "2026-07-28T04:02:57.773Z",
+      "updatedAt": "2026-07-28T04:02:57.773Z"
+    },
+    "expo-native-ui": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-native-ui/SKILL.md",
+      "skillFolderHash": "128096653ac126cc647a6450bf4ddaa51ba4a9aa",
+      "installedAt": "2026-07-28T04:02:57.774Z",
+      "updatedAt": "2026-07-28T04:02:57.774Z"
+    },
+    "expo-project-structure": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-project-structure/SKILL.md",
+      "skillFolderHash": "17116a4c2464f97d783371af9bcbd477689348fe",
+      "installedAt": "2026-07-28T04:02:57.774Z",
+      "updatedAt": "2026-07-28T04:02:57.774Z"
+    },
+    "expo-router": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-router/SKILL.md",
+      "skillFolderHash": "686de255a3e061628f480d3fbd523e7cecdfefcb",
+      "installedAt": "2026-07-28T04:02:57.775Z",
+      "updatedAt": "2026-07-28T04:02:57.775Z"
+    },
+    "expo-skill-eval": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": ".claude/skills/expo-skill-eval/SKILL.md",
+      "skillFolderHash": "8fba0f5e619101fcafee68e1d0b4f0517b138e44",
+      "installedAt": "2026-07-28T04:02:57.776Z",
+      "updatedAt": "2026-07-28T04:02:57.776Z"
+    },
+    "expo-tailwind-setup": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-tailwind-setup/SKILL.md",
+      "skillFolderHash": "2eeaca4f265aeabc04e221c9d4c9d50b82c0b96c",
+      "installedAt": "2026-07-28T04:02:57.776Z",
+      "updatedAt": "2026-07-28T04:02:57.776Z"
+    },
+    "expo-ui": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-ui/SKILL.md",
+      "skillFolderHash": "79fca5c3704185de75bda58226af3e37fca8cae4",
+      "installedAt": "2026-07-28T04:02:57.777Z",
+      "updatedAt": "2026-07-28T04:02:57.777Z"
+    },
+    "expo-upgrade": {
+      "source": "expo/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/expo/skills.git",
+      "skillPath": "plugins/expo/skills/expo-upgrade/SKILL.md",
+      "skillFolderHash": "6d64453d4df71337a979d7fc4d44b7cd75037a6a",
+      "installedAt": "2026-07-28T04:02:57.778Z",
+      "updatedAt": "2026-07-28T04:02:57.778Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "76a98a285cb0434f3d39e1a873823556330e398b",
+      "installedAt": "2026-07-28T04:03:18.915Z",
+      "updatedAt": "2026-07-28T04:03:18.915Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": [
+    "amp",
+    "antigravity",
+    "antigravity-cli",
+    "cline",
+    "codex",
+    "cursor",
+    "deepagents",
+    "gemini-cli",
+    "github-copilot",
+    "kimi-code-cli",
+    "opencode",
+    "warp",
+    "zed",
+    "claude-code"
+  ]
+}
