@@ -1,46 +1,75 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppButton, AppCard, SectionTitle, StatusBadge } from '@/components/ui';
+import { useSession } from '@/features/session/SessionContext';
+import { ApiDevice, devicesApi } from '@/services/api/devicesApi';
 import { theme } from '@/theme';
 import { ScrollView, Text, View } from '@/tw';
 
-const staffMembers = [
-  { id: 1, name: 'Linh Tran', role: 'Agent', status: 'Active' },
-  { id: 2, name: 'Minh Nguyen', role: 'Supervisor', status: 'Active' },
-  { id: 3, name: 'Hoa Le', role: 'Agent', status: 'Pending' },
-];
-
 export default function StaffScreen() {
   const router = useRouter();
+  const { isAdminUnlocked, touchUserActivity } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
 
+  const [devices, setDevices] = useState<ApiDevice[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAdminUnlocked) {
+      router.replace('/kiosk' as never);
+    }
+  }, [isAdminUnlocked]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const fetched = await devicesApi.getDevices();
+        setDevices(fetched);
+      } catch (err) {
+        console.warn('Devices fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (!isAdminUnlocked) return null;
+
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      className="flex-1 bg-slate-100"
-      contentContainerClassName={`flex-grow py-6 w-full self-center ${isTablet ? 'px-8 max-w-[980px]' : 'px-6'}`}
-    >
-      <View className="mb-4">
-        <Text className="text-3xl font-extrabold text-slate-900">Staff accounts</Text>
-        <Text className="text-sm text-slate-500 mt-1.5">Manage staff access and roles.</Text>
-      </View>
+    <View className="flex-1 bg-slate-100" onTouchStart={touchUserActivity}>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        className="flex-1 bg-slate-100"
+        contentContainerClassName={`flex-grow pt-8 pb-28 w-full self-center ${isTablet ? 'px-10 max-w-[1280px]' : 'px-6'}`}
+      >
+        <View className="mb-4">
+          <Text className="text-3xl font-extrabold text-slate-900">Registered Devices & Staff</Text>
+          <Text className="text-sm text-slate-500 mt-1.5">Manage deployed tablet kiosks and active devices.</Text>
+        </View>
 
-      <SectionTitle title="Users" subtitle="Role-based access can be configured here." />
-      {staffMembers.map((person) => (
-        <AppCard key={person.id} className="mb-3">
-          <View className="flex-row justify-between items-center">
-            <Text className="text-base font-bold text-slate-900">{person.name}</Text>
-            <StatusBadge label={person.status} color={person.status === 'Active' ? theme.colors.success : theme.colors.warning} />
-          </View>
-          <Text className="text-slate-500 text-sm mt-1.5">{person.role}</Text>
-        </AppCard>
-      ))}
+        <SectionTitle title="Kiosk Devices" subtitle="Devices registered to record passenger ratings." />
+        {loading ? (
+          <Text className="text-slate-500 py-4">Loading registered devices...</Text>
+        ) : (
+          devices.map((device) => (
+            <AppCard key={device.id} className="mb-3">
+              <View className="flex-row justify-between items-center">
+                <Text className="text-base font-bold text-slate-900">{device.deviceName}</Text>
+                <StatusBadge
+                  label={device.status}
+                  color={device.status === 'active' ? theme.colors.success : theme.colors.warning}
+                />
+              </View>
+              <Text className="text-slate-500 text-sm mt-1.5">ID: {device.deviceIdentifier} • Last seen: {device.lastSeenAt.substring(0, 10)}</Text>
+            </AppCard>
+          ))
+        )}
 
-      <AppButton title="Back to dashboard" onPress={() => router.push('/admin/dashboard' as never)} />
-      <AppButton title="Back" onPress={() => router.back()} variant="secondary" />
-    </ScrollView>
+        <AppButton title="Back to Dashboard" onPress={() => router.push('/admin/dashboard' as never)} />
+        <AppButton title="Back" onPress={() => router.back()} variant="secondary" />
+      </ScrollView>
+    </View>
   );
 }
-

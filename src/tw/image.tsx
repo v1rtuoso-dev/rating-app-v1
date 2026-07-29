@@ -32,7 +32,7 @@ function CSSImage(props: CSSImageProps) {
 }
 
 export const Image = (props: React.ComponentProps<typeof CSSImage> & { className?: string }) => {
-  return useCssElement(CSSImage, props, { className: 'style' });
+  return (useCssElement as any)(CSSImage, props, { className: 'style' });
 };
 
 Image.displayName = 'CSS(Image)';

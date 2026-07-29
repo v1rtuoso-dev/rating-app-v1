@@ -11,9 +11,9 @@ export type AppButtonProps = {
 export function AppButton({ title, onPress, variant = 'primary', fullWidth = true }: AppButtonProps) {
   const bgClass =
     variant === 'secondary'
-      ? 'bg-slate-100'
+      ? 'bg-slate-200 border border-slate-300'
       : variant === 'ghost'
-        ? 'bg-white'
+        ? 'bg-white border border-slate-300'
         : 'bg-teal-700';
 
   const textClass = variant === 'primary' ? 'text-white' : 'text-slate-900';
@@ -21,18 +21,18 @@ export function AppButton({ title, onPress, variant = 'primary', fullWidth = tru
 
   return (
     <TouchableOpacity
-      activeOpacity={0.9}
+      activeOpacity={0.85}
       onPress={onPress}
-      className={`rounded-2xl py-4 px-6 items-center justify-center mt-3 shadow-sm ${bgClass} ${widthClass}`}
+      className={`rounded-2xl py-5 px-8 items-center justify-center mt-4 shadow-md ${bgClass} ${widthClass}`}
     >
-      <Text selectable className={`text-base font-bold ${textClass}`}>{title}</Text>
+      <Text selectable className={`text-lg font-bold text-center ${textClass}`}>{title}</Text>
     </TouchableOpacity>
   );
 }
 
 export function AppCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <View className={`bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-sm ${className}`}>
+    <View className={`bg-white rounded-3xl p-8 border border-slate-200 shadow-md ${className}`}>
       {children}
     </View>
   );
@@ -40,18 +40,18 @@ export function AppCard({ children, className = '' }: { children: React.ReactNod
 
 export function SectionTitle({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <View className="mb-3">
-      <Text selectable className="text-lg font-bold text-slate-900">{title}</Text>
-      {subtitle ? <Text selectable className="text-xs text-slate-500 mt-1">{subtitle}</Text> : null}
+    <View className="mb-4">
+      <Text selectable className="text-2xl font-bold text-slate-900" style={{ lineHeight: 32 }}>{title}</Text>
+      {subtitle ? <Text selectable className="text-base text-slate-500 mt-1" style={{ lineHeight: 22 }}>{subtitle}</Text> : null}
     </View>
   );
 }
 
 export function MetricCard({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
-    <View className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex-1 min-h-[92px] justify-center">
-      <Text selectable className="text-xs text-slate-500 mb-1 uppercase tracking-wider">{label}</Text>
-      <Text selectable className="text-2xl font-extrabold text-slate-900" style={accent ? { color: accent } : undefined}>
+    <View className="bg-white rounded-2xl p-6 border border-slate-200 flex-1 min-h-[110px] justify-center shadow-sm">
+      <Text selectable className="text-sm font-semibold text-slate-500 mb-1 uppercase tracking-wider">{label}</Text>
+      <Text selectable className="text-3xl font-black text-slate-900" style={accent ? { color: accent } : undefined}>
         {value}
       </Text>
     </View>
@@ -60,8 +60,8 @@ export function MetricCard({ label, value, accent }: { label: string; value: str
 
 export function StatusBadge({ label, color }: { label: string; color?: string }) {
   return (
-    <View className="py-1 px-2.5 rounded-full self-start bg-teal-700" style={color ? { backgroundColor: color } : undefined}>
-      <Text selectable className="text-white text-xs font-bold">{label}</Text>
+    <View className="py-1.5 px-3.5 rounded-full self-start bg-teal-700" style={color ? { backgroundColor: color } : undefined}>
+      <Text selectable className="text-white text-sm font-bold">{label}</Text>
     </View>
   );
 }
@@ -69,14 +69,14 @@ export function StatusBadge({ label, color }: { label: string; color?: string })
 export function RatingOption({ label, emoji, selected, onPress }: { label: string; emoji: string; selected: boolean; onPress: () => void }) {
   return (
     <TouchableOpacity
-      activeOpacity={0.9}
+      activeOpacity={0.85}
       onPress={onPress}
-      className={`border rounded-2xl p-4 items-center flex-1 mx-1 min-h-[116px] justify-center ${
-        selected ? 'border-teal-700 bg-cyan-50' : 'border-slate-200 bg-white'
+      className={`border rounded-3xl p-5 items-center flex-1 mx-1.5 min-h-[150px] justify-center shadow-sm ${
+        selected ? 'border-2 border-teal-700 bg-cyan-50/80 shadow-md' : 'border-slate-200 bg-white'
       }`}
     >
-      <Text selectable className="text-3xl mb-1.5">{emoji}</Text>
-      <Text selectable className="text-sm font-semibold text-slate-900">{label}</Text>
+      <Text selectable className="text-center mb-2 text-5xl" style={{ lineHeight: 56 }}>{emoji}</Text>
+      <Text selectable className="text-base font-bold text-slate-900 text-center">{label}</Text>
     </TouchableOpacity>
   );
 }
@@ -84,14 +84,16 @@ export function RatingOption({ label, emoji, selected, onPress }: { label: strin
 export function ReasonChip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   return (
     <TouchableOpacity
-      activeOpacity={0.9}
+      activeOpacity={0.85}
       onPress={onPress}
-      className={`border rounded-full py-2.5 px-3.5 mr-2.5 mb-2.5 ${
+      className={`border rounded-2xl py-3.5 px-6 mr-3 mb-3 shadow-sm ${
         selected ? 'bg-teal-700 border-teal-700' : 'bg-white border-slate-200'
       }`}
     >
-      <Text selectable className={`font-semibold ${selected ? 'text-white' : 'text-slate-900'}`}>{label}</Text>
+      <Text selectable className={`text-base font-bold ${selected ? 'text-white' : 'text-slate-900'}`}>{label}</Text>
     </TouchableOpacity>
   );
 }
+
+
 
