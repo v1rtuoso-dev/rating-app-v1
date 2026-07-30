@@ -69,14 +69,14 @@ export function StatusBadge({ label, color }: { label: string; color?: string })
 export function RatingOption({ label, emoji, selected, onPress }: { label: string; emoji: string; selected: boolean; onPress: () => void }) {
   return (
     <TouchableOpacity
-      activeOpacity={0.85}
+      activeOpacity={0.7}
       onPress={onPress}
-      className={`border rounded-3xl p-5 items-center flex-1 mx-1.5 min-h-[150px] justify-center shadow-sm ${
-        selected ? 'border-2 border-teal-700 bg-cyan-50/80 shadow-md' : 'border-slate-200 bg-white'
-      }`}
+      className="items-center flex-1 py-4 px-2 justify-center"
     >
-      <Text selectable className="text-center mb-2 text-5xl" style={{ lineHeight: 56 }}>{emoji}</Text>
-      <Text selectable className="text-base font-bold text-slate-900 text-center">{label}</Text>
+      <Text selectable className="text-center mb-3 text-7xl" style={{ lineHeight: 84 }}>{emoji}</Text>
+      <Text selectable className={`text-lg font-bold text-center ${selected ? 'text-teal-700 font-extrabold' : 'text-slate-800'}`}>
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -86,10 +86,19 @@ export function ReasonChip({ label, selected, onPress }: { label: string; select
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
-      className={`border rounded-2xl py-3.5 px-6 mr-3 mb-3 shadow-sm ${
-        selected ? 'bg-teal-700 border-teal-700' : 'bg-white border-slate-200'
+      className={`flex-row items-center border rounded-2xl py-3.5 px-5 mr-3 mb-3 shadow-sm ${
+        selected ? 'bg-teal-700 border-teal-700' : 'bg-white border-slate-300'
       }`}
     >
+      <View
+        className={`w-6 h-6 rounded-lg items-center justify-center mr-3 border ${
+          selected ? 'bg-white border-white' : 'bg-slate-50 border-slate-300'
+        }`}
+      >
+        {selected ? (
+          <Text className="text-teal-700 font-extrabold text-sm" style={{ lineHeight: 18 }}>✓</Text>
+        ) : null}
+      </View>
       <Text selectable className={`text-base font-bold ${selected ? 'text-white' : 'text-slate-900'}`}>{label}</Text>
     </TouchableOpacity>
   );

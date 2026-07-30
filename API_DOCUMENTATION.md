@@ -363,13 +363,15 @@ All customer satisfaction endpoints require authentication.
   "data": [
     {
       "id": 1,
-      "flightId": 123,
+      "flightId": 1022552,
+      "staffUserId": 0,
       "deviceId": 1,
-      "deviceName": "iPad Pro",
-      "rating": 5,
-      "comment": "Great service!",
-      "createdAt": "2024-01-15T10:30:00Z",
-      "reasonIds": [1, 2]
+      "deviceName": "Tablet Kiosk 1",
+      "checkinCounterName": "Counter A",
+      "ratingLevel": 4,
+      "evaluationType": 0,
+      "createdAt": "2026-07-30T10:30:00Z",
+      "reasonIds": []
     }
   ]
 }
@@ -386,13 +388,15 @@ All customer satisfaction endpoints require authentication.
   "statusCode": 200,
   "data": {
     "id": 1,
-    "flightId": 123,
+    "flightId": 1022552,
+    "staffUserId": 0,
     "deviceId": 1,
-    "deviceName": "iPad Pro",
-    "rating": 5,
-    "comment": "Great service!",
-    "createdAt": "2024-01-15T10:30:00Z",
-    "reasonIds": [1, 2]
+    "deviceName": "Tablet Kiosk 1",
+    "checkinCounterName": "Counter A",
+    "ratingLevel": 4,
+    "evaluationType": 0,
+    "createdAt": "2026-07-30T10:30:00Z",
+    "reasonIds": []
   }
 }
 ```
@@ -403,11 +407,15 @@ All customer satisfaction endpoints require authentication.
 **Request Body:**
 ```json
 {
-  "flightId": 123,
+  "flightId": 1022552,
+  "staffUserId": 0,
   "deviceId": 1,
-  "rating": 5,
-  "comment": "Great service!",
-  "reasonIds": [1, 2]
+  "checkinCounterName": "12",
+  "ratingLevel": 3,
+  "evaluationType": 0,
+  "reasonIds": [
+    1
+  ]
 }
 ```
 
@@ -419,12 +427,14 @@ All customer satisfaction endpoints require authentication.
   "statusCode": 201,
   "data": {
     "id": 1,
-    "flightId": 123,
+    "flightId": 1022552,
+    "staffUserId": 0,
     "deviceId": 1,
-    "rating": 5,
-    "comment": "Great service!",
+    "checkinCounterName": "12",
+    "ratingLevel": 3,
+    "evaluationType": 0,
     "createdAt": "2024-01-15T10:30:00Z",
-    "reasonIds": [1, 2]
+    "reasonIds": [1]
   }
 }
 ```

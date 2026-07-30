@@ -17,7 +17,6 @@ export type Evaluation = {
   flightNo: string;
   counter: string;
   rating: number;
-  comment: string;
   createdAt: string;
 };
 
@@ -62,7 +61,6 @@ export const mockEvaluations: Evaluation[] = [
     flightNo: 'VN210',
     counter: 'Counter A',
     rating: 4,
-    comment: 'Smooth check-in experience.',
     createdAt: '08:10',
   },
   {
@@ -70,7 +68,6 @@ export const mockEvaluations: Evaluation[] = [
     flightNo: 'VN512',
     counter: 'Counter C',
     rating: 2,
-    comment: 'Waiting time was long.',
     createdAt: '10:35',
   },
   {
@@ -78,7 +75,6 @@ export const mockEvaluations: Evaluation[] = [
     flightNo: 'QF88',
     counter: 'Counter B',
     rating: 3,
-    comment: 'Friendly but slightly delayed.',
     createdAt: '14:20',
   },
 ];

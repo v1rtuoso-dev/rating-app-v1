@@ -8,7 +8,7 @@ import { ScrollView, Text, TextInput, View } from '@/tw';
 
 export default function AdminLoginScreen() {
   const router = useRouter();
-  const { registerDeviceNow } = useSession();
+  const { registerDeviceNow, setAdminUnlocked } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
 
@@ -29,13 +29,15 @@ export default function AdminLoginScreen() {
     try {
       await authApi.login({ username, password });
       await registerDeviceNow();
-      router.push('/admin/select-flight' as never);
+      setAdminUnlocked(true);
+      router.replace('/admin/select-flight' as never);
     } catch (err: any) {
       console.warn('Login error:', err);
       // Register device even if login fallback is used
       await registerDeviceNow();
       if (username === 'HK01' && password === '123456') {
-        router.push('/admin/select-flight' as never);
+        setAdminUnlocked(true);
+        router.replace('/admin/select-flight' as never);
       } else {
         setError(err?.message || 'Invalid username or password.');
       }

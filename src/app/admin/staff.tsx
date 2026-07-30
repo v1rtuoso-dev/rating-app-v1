@@ -4,17 +4,29 @@ import { useRouter } from 'expo-router';
 import { AppButton, AppCard, SectionTitle, StatusBadge } from '@/components/ui';
 import { useSession } from '@/features/session/SessionContext';
 import { ApiDevice, devicesApi } from '@/services/api/devicesApi';
+import { authApi } from '@/services/api/authApi';
 import { theme } from '@/theme';
 import { ScrollView, Text, View } from '@/tw';
 
 export default function StaffScreen() {
   const router = useRouter();
-  const { isAdminUnlocked, touchUserActivity } = useSession();
+  const { isAdminUnlocked, clearSession, lockAdmin, touchUserActivity } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
 
   const [devices, setDevices] = useState<ApiDevice[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleSignOut = async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // Continue cleanup
+    }
+    await clearSession();
+    lockAdmin();
+    router.replace('/admin' as never);
+  };
 
   useEffect(() => {
     if (!isAdminUnlocked) {
@@ -44,9 +56,18 @@ export default function StaffScreen() {
         className="flex-1 bg-slate-100"
         contentContainerClassName={`flex-grow pt-8 pb-28 w-full self-center ${isTablet ? 'px-10 max-w-[1280px]' : 'px-6'}`}
       >
-        <View className="mb-4">
-          <Text className="text-3xl font-extrabold text-slate-900">Registered Devices & Staff</Text>
-          <Text className="text-sm text-slate-500 mt-1.5">Manage deployed tablet kiosks and active devices.</Text>
+        <View className="flex-row justify-between items-center mb-6">
+          <View>
+            <Text className="text-3xl font-extrabold text-slate-900">Registered Devices & Staff</Text>
+            <Text className="text-sm text-slate-500 mt-1.5">Manage deployed tablet kiosks and active devices.</Text>
+          </View>
+
+          <AppButton
+            title="🚪 Sign Out"
+            onPress={handleSignOut}
+            variant="secondary"
+            fullWidth={false}
+          />
         </View>
 
         <SectionTitle title="Kiosk Devices" subtitle="Devices registered to record passenger ratings." />
