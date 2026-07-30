@@ -1,14 +1,17 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from '@/tw';
+import { Icon, IconName } from './ui/Icon';
+export * from './ui/Icon';
 
 export type AppButtonProps = {
   title: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary' | 'ghost';
   fullWidth?: boolean;
+  icon?: IconName;
 };
 
-export function AppButton({ title, onPress, variant = 'primary', fullWidth = true }: AppButtonProps) {
+export function AppButton({ title, onPress, variant = 'primary', fullWidth = true, icon }: AppButtonProps) {
   const bgClass =
     variant === 'secondary'
       ? 'bg-slate-200 border border-slate-300'
@@ -17,14 +20,20 @@ export function AppButton({ title, onPress, variant = 'primary', fullWidth = tru
         : 'bg-teal-700';
 
   const textClass = variant === 'primary' ? 'text-white' : 'text-slate-900';
+  const iconColor = variant === 'primary' ? '#ffffff' : '#1e293b';
   const widthClass = fullWidth ? 'w-full' : 'w-auto';
 
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
-      className={`rounded-2xl py-5 px-8 items-center justify-center mt-4 shadow-md ${bgClass} ${widthClass}`}
+      className={`flex-row rounded-2xl py-5 px-8 items-center justify-center mt-4 shadow-md ${bgClass} ${widthClass}`}
     >
+      {icon ? (
+        <View className="mr-2.5">
+          <Icon name={icon} size={22} color={iconColor} />
+        </View>
+      ) : null}
       <Text selectable className={`text-lg font-bold text-center ${textClass}`}>{title}</Text>
     </TouchableOpacity>
   );

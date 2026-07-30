@@ -2,37 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppButton, AppCard, SectionTitle, StatusBadge } from '@/components/ui';
+import { AdminDrawer } from '@/components/AdminDrawer';
 import { useSession } from '@/features/session/SessionContext';
 import { ApiDevice, devicesApi } from '@/services/api/devicesApi';
-import { authApi } from '@/services/api/authApi';
 import { theme } from '@/theme';
 import { ScrollView, Text, View } from '@/tw';
 
 export default function StaffScreen() {
   const router = useRouter();
-  const { isAdminUnlocked, clearSession, lockAdmin, touchUserActivity } = useSession();
+  const { session, isAdminUnlocked, isLoaded, touchUserActivity } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
 
   const [devices, setDevices] = useState<ApiDevice[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const handleSignOut = async () => {
-    try {
-      await authApi.logout();
-    } catch {
-      // Continue cleanup
-    }
-    await clearSession();
-    lockAdmin();
-    router.replace('/admin' as never);
-  };
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
   useEffect(() => {
-    if (!isAdminUnlocked) {
+    if (isLoaded && !isAdminUnlocked && session) {
       router.replace('/kiosk' as never);
     }
-  }, [isAdminUnlocked]);
+  }, [isAdminUnlocked, isLoaded, session]);
 
   useEffect(() => {
     (async () => {
@@ -63,8 +53,9 @@ export default function StaffScreen() {
           </View>
 
           <AppButton
-            title="🚪 Sign Out"
-            onPress={handleSignOut}
+            title="Admin Menu"
+            icon="menu"
+            onPress={() => setDrawerVisible(true)}
             variant="secondary"
             fullWidth={false}
           />
@@ -87,10 +78,9 @@ export default function StaffScreen() {
             </AppCard>
           ))
         )}
-
-        <AppButton title="Back to Dashboard" onPress={() => router.push('/admin/dashboard' as never)} />
-        <AppButton title="Back" onPress={() => router.back()} variant="secondary" />
       </ScrollView>
+
+      <AdminDrawer visible={drawerVisible} onClose={() => setDrawerVisible(false)} />
     </View>
   );
 }

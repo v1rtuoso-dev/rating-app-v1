@@ -1,33 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AppButton, AppCard, MetricCard, SectionTitle, StatusBadge } from '@/components/ui';
+import { AppButton, AppCard, Icon, MetricCard, SectionTitle, StatusBadge } from '@/components/ui';
+import { AdminDrawer } from '@/components/AdminDrawer';
 import { useSession } from '@/features/session/SessionContext';
 import { ApiEvaluation, evaluationsApi } from '@/services/api/evaluationsApi';
-import { authApi } from '@/services/api/authApi';
 import { theme } from '@/theme';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from '@/tw';
+import { ScrollView, Text, View } from '@/tw';
 
 export default function AdminDashboardScreen() {
   const router = useRouter();
-  const { session, isAdminUnlocked, isLoaded, changeAdminPin, clearSession, lockAdmin, touchUserActivity } = useSession();
+  const { session, isAdminUnlocked, isLoaded, touchUserActivity } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
 
   const [evaluations, setEvaluations] = useState<ApiEvaluation[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Change PIN State
-  const [pinChangeModalVisible, setPinChangeModalVisible] = useState(false);
-  const [newPinInput, setNewPinInput] = useState('');
-  const [pinChangeMessage, setPinChangeMessage] = useState('');
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
   // Auto redirect to Kiosk when Admin mode locks due to inactivity
   useEffect(() => {
-    if (isLoaded && !isAdminUnlocked) {
+    if (isLoaded && !isAdminUnlocked && session) {
       router.replace('/kiosk' as never);
     }
-  }, [isAdminUnlocked, isLoaded]);
+  }, [isAdminUnlocked, isLoaded, session]);
 
   useEffect(() => {
     (async () => {
@@ -41,35 +37,6 @@ export default function AdminDashboardScreen() {
       }
     })();
   }, []);
-
-  const handleSignOut = async () => {
-    try {
-      await authApi.logout();
-    } catch {
-      // Continue cleanup
-    }
-    await clearSession();
-    lockAdmin();
-    router.replace('/admin' as never);
-  };
-
-  const handleChangePinSubmit = async () => {
-    if (!newPinInput || newPinInput.trim().length < 4) {
-      setPinChangeMessage('PIN must be at least 4 digits');
-      return;
-    }
-    const success = await changeAdminPin(newPinInput);
-    if (success) {
-      setPinChangeMessage('✅ Admin PIN updated successfully!');
-      setTimeout(() => {
-        setPinChangeModalVisible(false);
-        setNewPinInput('');
-        setPinChangeMessage('');
-      }, 1200);
-    } else {
-      setPinChangeMessage('Failed to update PIN');
-    }
-  };
 
   const totalReviews = evaluations.length;
   const getRatingVal = (e: ApiEvaluation) => e.ratingLevel ?? e.rating ?? 4;
@@ -86,10 +53,7 @@ export default function AdminDashboardScreen() {
   }
 
   return (
-    <View
-      className="flex-1 bg-slate-100"
-      onTouchStart={touchUserActivity}
-    >
+    <View className="flex-1 bg-slate-100" onTouchStart={touchUserActivity}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         className="flex-1 bg-slate-100"
@@ -103,23 +67,13 @@ export default function AdminDashboardScreen() {
             </Text>
           </View>
 
-          <View className="flex-row gap-2">
-            <AppButton
-              title="🔒 Kiosk"
-              onPress={() => {
-                lockAdmin();
-                router.replace('/kiosk' as never);
-              }}
-              variant="ghost"
-              fullWidth={false}
-            />
-            <AppButton
-              title="🚪 Sign Out"
-              onPress={handleSignOut}
-              variant="secondary"
-              fullWidth={false}
-            />
-          </View>
+          <AppButton
+            title="Admin Menu"
+            icon="menu"
+            onPress={() => setDrawerVisible(true)}
+            variant="secondary"
+            fullWidth={false}
+          />
         </View>
 
         <View className="flex-row gap-3 mb-3">
@@ -154,69 +108,9 @@ export default function AdminDashboardScreen() {
             );
           })
         )}
-
-        <View className="mt-4 flex-row gap-3">
-          <View className="flex-1">
-            <AppButton title="Manage Staff & Devices" onPress={() => router.push('/admin/staff' as never)} />
-          </View>
-          <View className="flex-1">
-            <AppButton
-              title="Change Flight / Session"
-              onPress={() => router.push('/admin/select-flight' as never)}
-              variant="secondary"
-            />
-          </View>
-        </View>
-
-        <View className="mt-3">
-          <AppButton
-            title="🔑 Change Admin PIN"
-            onPress={() => {
-              setNewPinInput('');
-              setPinChangeMessage('');
-              setPinChangeModalVisible(true);
-            }}
-            variant="ghost"
-          />
-        </View>
       </ScrollView>
 
-      {/* Change PIN Modal */}
-      <Modal visible={pinChangeModalVisible} transparent animationType="fade">
-        <View className="flex-1 bg-slate-900/60 justify-center items-center p-6">
-          <View className="bg-white rounded-3xl p-8 w-full max-w-[440px] border border-slate-200 shadow-2xl">
-            <Text className="text-2xl font-bold text-slate-900">Change Admin PIN</Text>
-            <Text className="text-base text-slate-500 mt-1 mb-6">Enter a new 4+ digit PIN to secure Admin Mode.</Text>
-
-            <TextInput
-              secureTextEntry
-              keyboardType="number-pad"
-              value={newPinInput}
-              onChangeText={setNewPinInput}
-              placeholder="Enter new PIN (e.g. 654321)"
-              className="border border-slate-300 rounded-2xl p-5 bg-slate-50 text-slate-900 mb-3 text-center text-2xl font-bold tracking-widest"
-            />
-            {pinChangeMessage ? (
-              <Text
-                className={`text-sm mb-4 text-center font-bold ${
-                  pinChangeMessage.includes('✅') ? 'text-teal-700' : 'text-red-600'
-                }`}
-              >
-                {pinChangeMessage}
-              </Text>
-            ) : null}
-
-            <View className="flex-row gap-4 mt-2">
-              <View className="flex-1">
-                <AppButton title="Cancel" onPress={() => setPinChangeModalVisible(false)} variant="secondary" />
-              </View>
-              <View className="flex-1">
-                <AppButton title="Save PIN" onPress={handleChangePinSubmit} />
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <AdminDrawer visible={drawerVisible} onClose={() => setDrawerVisible(false)} />
     </View>
   );
 }

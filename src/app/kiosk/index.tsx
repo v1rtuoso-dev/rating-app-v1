@@ -1,4 +1,4 @@
-import { AppButton, AppCard, RatingOption, ReasonChip, SectionTitle } from '@/components/ui';
+import { AppButton, AppCard, Icon, RatingOption, ReasonChip, SectionTitle } from '@/components/ui';
 import { useSession } from '@/features/session/SessionContext';
 import { CreateEvaluationPayload, evaluationsApi } from '@/services/api/evaluationsApi';
 import { flightApi } from '@/services/api/flightApi';
@@ -162,7 +162,7 @@ export default function KioskScreen() {
             }}
             className="p-2 opacity-70"
           >
-            <Text className="text-3xl">🔒</Text>
+            <Icon name="lock-outline" size={36} color="#475569" />
           </TouchableOpacity>
         </View>
 
