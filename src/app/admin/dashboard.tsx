@@ -1,22 +1,73 @@
-import React, { useEffect, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
-import { useRouter } from 'expo-router';
-import { AppButton, AppCard, Icon, MetricCard, SectionTitle, StatusBadge } from '@/components/ui';
 import { AdminDrawer } from '@/components/AdminDrawer';
+import { CounterPerformanceChart } from '@/components/charts/CounterPerformanceChart';
+import { RatingBreakdownChart } from '@/components/charts/RatingBreakdownChart';
+import { ReasonDistributionChart } from '@/components/charts/ReasonDistributionChart';
+import { AppButton, AppCard, Icon, MetricCard, PageHeader, SectionTitle, StatusBadge } from '@/components/ui';
 import { useSession } from '@/features/session/SessionContext';
 import { ApiEvaluation, evaluationsApi } from '@/services/api/evaluationsApi';
+import { reasonsApi, UnsatisfiedReason } from '@/services/api/reasonsApi';
 import { theme } from '@/theme';
-import { ScrollView, Text, View } from '@/tw';
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from '@/tw';
+import { useRouter } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
+import { BackHandler, useWindowDimensions } from 'react-native';
+
+type TimeFilter = 'all' | 'today' | 'week';
+type RatingFilter = 'all' | 4 | 3 | 2 | 1;
+type ChartTab = 'breakdown' | 'reasons' | 'counters';
+
+function isCreatedToday(createdAtStr: string | undefined | null): boolean {
+  if (!createdAtStr) return false;
+  const str = String(createdAtStr).trim();
+  if (!str) return false;
+
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const todayYYYYMMDD = `${yyyy}-${mm}-${dd}`;
+
+  // 1. Direct YYYY-MM-DD match (e.g. "2026-07-31T11:40:00Z")
+  if (str.includes(todayYYYYMMDD)) {
+    return true;
+  }
+
+  // 2. Full Date / ISO string check (contains date hyphen "-")
+  if (str.includes('-')) {
+    const itemDate = new Date(str);
+    if (!isNaN(itemDate.getTime())) {
+      const itemYYYY = itemDate.getFullYear();
+      const itemMM = String(itemDate.getMonth() + 1).padStart(2, '0');
+      const itemDD = String(itemDate.getDate()).padStart(2, '0');
+      return `${itemYYYY}-${itemMM}-${itemDD}` === todayYYYYMMDD;
+    }
+    return false;
+  }
+
+  // 3. Anchored time-only string (e.g. "08:10" or "14:20:00")
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(str)) {
+    return true;
+  }
+
+  return false;
+}
 
 export default function AdminDashboardScreen() {
   const router = useRouter();
-  const { session, isAdminUnlocked, isLoaded, touchUserActivity } = useSession();
+  const { session, isAdminUnlocked, isLoaded, lockAdmin, touchUserActivity } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
 
   const [evaluations, setEvaluations] = useState<ApiEvaluation[]>([]);
+  const [reasonsList, setReasonsList] = useState<UnsatisfiedReason[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerVisible, setDrawerVisible] = useState(false);
+
+  // Filter States
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
+  const [ratingFilter, setRatingFilter] = useState<RatingFilter>('all');
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [activeChartTab, setActiveChartTab] = useState<ChartTab>('breakdown');
 
   // Auto redirect to Kiosk when Admin mode locks due to inactivity
   useEffect(() => {
@@ -25,11 +76,27 @@ export default function AdminDashboardScreen() {
     }
   }, [isAdminUnlocked, isLoaded, session]);
 
+  // Handle Android Back button: return to Kiosk mode instead of Sign In
+  useEffect(() => {
+    const onBackPress = () => {
+      lockAdmin();
+      router.replace('/kiosk' as never);
+      return true;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, [lockAdmin]);
+
   useEffect(() => {
     (async () => {
       try {
-        const fetched = await evaluationsApi.getEvaluations();
-        setEvaluations(fetched);
+        const [fetchedEvals, fetchedReasons] = await Promise.all([
+          evaluationsApi.getEvaluations(),
+          reasonsApi.getReasons().catch(() => []),
+        ]);
+        setEvaluations(fetchedEvals);
+        setReasonsList(fetchedReasons);
       } catch (err) {
         console.warn('Dashboard fetch error:', err);
       } finally {
@@ -38,10 +105,45 @@ export default function AdminDashboardScreen() {
     })();
   }, []);
 
-  const totalReviews = evaluations.length;
   const getRatingVal = (e: ApiEvaluation) => e.ratingLevel ?? e.rating ?? 4;
-  const excellentReviews = evaluations.filter((e) => getRatingVal(e) >= 4).length;
-  const avgRating = totalReviews > 0 ? (evaluations.reduce((acc, e) => acc + getRatingVal(e), 0) / totalReviews).toFixed(1) : '4.0';
+
+  // Filtered Evaluations
+  const filteredEvaluations = useMemo(() => {
+    return evaluations.filter((item) => {
+      // 1. Rating filter
+      const ratingVal = getRatingVal(item);
+      if (ratingFilter !== 'all' && ratingVal !== ratingFilter) return false;
+
+      // 2. Time filter
+      if (timeFilter === 'today') {
+        const dateStr = (item as any).createdAt || (item as any).createdDate || (item as any).evaluationDate || (item as any).dateCreated || (item as any).created_at || '';
+        if (!isCreatedToday(dateStr)) return false;
+      }
+
+      // 3. Search keyword filter
+      if (searchKeyword.trim()) {
+        const query = searchKeyword.trim().toLowerCase();
+        const textToSearch = `${item.deviceName || ''} ${item.checkinCounterName || ''} ${item.flightId || ''}`.toLowerCase();
+        if (!textToSearch.includes(query)) return false;
+      }
+
+      return true;
+    });
+  }, [evaluations, timeFilter, ratingFilter, searchKeyword]);
+
+  const totalReviews = filteredEvaluations.length;
+  const excellentReviews = filteredEvaluations.filter((e) => getRatingVal(e) >= 4).length;
+  const satisfiedReviews = filteredEvaluations.filter((e) => getRatingVal(e) >= 3).length;
+  const satisfactionRate = totalReviews > 0 ? Math.round((satisfiedReviews / totalReviews) * 100) : 100;
+  const avgRating = totalReviews > 0 ? (filteredEvaluations.reduce((acc, e) => acc + getRatingVal(e), 0) / totalReviews).toFixed(1) : '4.0';
+
+  const hasActiveFilters = timeFilter !== 'all' || ratingFilter !== 'all' || searchKeyword.trim() !== '';
+
+  const clearAllFilters = () => {
+    setTimeFilter('all');
+    setRatingFilter('all');
+    setSearchKeyword('');
+  };
 
   if (!isAdminUnlocked) {
     return (
@@ -57,39 +159,181 @@ export default function AdminDashboardScreen() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         className="flex-1 bg-slate-100"
-        contentContainerClassName={`flex-grow pt-8 pb-28 w-full self-center ${isTablet ? 'px-10 max-w-[1280px]' : 'px-6'}`}
+        contentContainerClassName={`flex-grow pt-8 pb-36 w-full self-center ${isTablet ? 'px-10 max-w-[1280px]' : 'px-6'}`}
       >
-        <View className="flex-row justify-between items-center mb-6">
-          <View>
-            <Text className="text-3xl font-extrabold text-slate-900">Operations Dashboard</Text>
-            <Text className="text-sm text-slate-500 mt-1">
-              Active: Flight {session?.flightNo || 'WE272'} • {session?.counter || 'Counter A'}
-            </Text>
+        {/* Header Bar */}
+        <PageHeader
+          title="Operations Dashboard"
+          subtitle={`Active: Flight ${session?.flightNo || 'WE272'} • ${session?.counter || 'Counter A'}`}
+          rightAction={
+            <AppButton
+              title="Admin Menu"
+              icon="menu"
+              onPress={() => setDrawerVisible(true)}
+              variant="secondary"
+              fullWidth={false}
+            />
+          }
+        />
+
+        {/* Filter Controls Section */}
+        <View className="bg-white rounded-3xl p-6 border border-slate-200 mb-6" style={{ elevation: 2 }}>
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-xl font-extrabold text-slate-900">Filter Analytics & Records</Text>
+            {hasActiveFilters ? (
+              <TouchableOpacity onPress={clearAllFilters} className="bg-rose-50 px-3.5 py-1.5 rounded-full border border-rose-200">
+                <Text className="text-sm font-bold text-rose-700">✕ Clear Filters</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
 
-          <AppButton
-            title="Admin Menu"
-            icon="menu"
-            onPress={() => setDrawerVisible(true)}
-            variant="secondary"
-            fullWidth={false}
-          />
+          {/* Search Keyword Filter */}
+          <View className="mb-4 flex-row items-center bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3">
+            <View className="mr-2.5">
+              <Icon name="search" size={22} color="#64748b" />
+            </View>
+            <TextInput
+              value={searchKeyword}
+              onChangeText={setSearchKeyword}
+              placeholder="Search counter, flight ID, or device..."
+              className="flex-1 text-slate-900 text-base font-semibold"
+            />
+            {searchKeyword ? (
+              <TouchableOpacity onPress={() => setSearchKeyword('')} className="p-1">
+                <Text className="text-slate-400 font-bold text-base">✕</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+
+          {/* Time Window Pills */}
+          <View className="mb-4">
+            <Text className="text-sm font-extrabold text-slate-500 uppercase tracking-wider mb-2">Time Range</Text>
+            <View className="flex-row gap-2.5">
+              {[
+                { id: 'all', label: 'All Time' },
+                { id: 'today', label: 'Today' },
+              ].map((item) => {
+                const isActive = timeFilter === item.id;
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => setTimeFilter(item.id as TimeFilter)}
+                    className="py-2.5 px-5 rounded-xl"
+                    style={{
+                      backgroundColor: isActive ? '#0f766e' : '#f8fafc',
+                      borderWidth: 1,
+                      borderColor: isActive ? '#0f766e' : '#cbd5e1',
+                    }}
+                  >
+                    <Text className="text-sm font-bold" style={{ color: isActive ? '#ffffff' : '#334155' }}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Rating Level Pills */}
+          <View>
+            <Text className="text-sm font-extrabold text-slate-500 uppercase tracking-wider mb-2">Rating Level</Text>
+            <View className="flex-row flex-wrap gap-2.5">
+              {[
+                { id: 'all', label: 'All Ratings' },
+                { id: 4, label: '😍 4 Stars' },
+                { id: 3, label: '😊 3 Stars' },
+                { id: 2, label: '😐 2 Stars' },
+                { id: 1, label: '😞 1 Star' },
+              ].map((item) => {
+                const isActive = ratingFilter === item.id;
+                return (
+                  <TouchableOpacity
+                    key={item.id.toString()}
+                    onPress={() => setRatingFilter(item.id as RatingFilter)}
+                    className="py-2.5 px-4 rounded-xl"
+                    style={{
+                      backgroundColor: isActive ? '#0f766e' : '#f8fafc',
+                      borderWidth: 1,
+                      borderColor: isActive ? '#0f766e' : '#cbd5e1',
+                    }}
+                  >
+                    <Text className="text-sm font-bold" style={{ color: isActive ? '#ffffff' : '#334155' }}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
         </View>
 
+        {/* Metric Cards Row */}
         <View className="flex-row gap-3 mb-3">
           <MetricCard label="Total Reviews" value={totalReviews.toString()} accent={theme.colors.primary} />
-          <MetricCard label="Excellent" value={excellentReviews.toString()} accent={theme.colors.success} />
+          <MetricCard label="Satisfaction Rate" value={`${satisfactionRate}%`} accent={theme.colors.success} />
         </View>
-        <View className="flex-row gap-3 mb-3">
+        <View className="flex-row gap-3 mb-6">
           <MetricCard label="Avg Rating" value={avgRating} accent={theme.colors.warning} />
-          <MetricCard label="Session Status" value="Active" accent={theme.colors.accent} />
+          <MetricCard label="Excellent (4 ⭐)" value={excellentReviews.toString()} accent={theme.colors.accent} />
         </View>
 
+        {/* Interactive Charts Section Header & Tab Switcher */}
+        <View className="flex-row justify-between items-center mb-4">
+          <SectionTitle title="Analytics & Visual Insights" subtitle="Visual rating breakdowns and trend analysis." />
+        </View>
+
+        <View className="flex-row bg-slate-200/80 p-1.5 rounded-2xl mb-6 border border-slate-300">
+          {[
+            { id: 'breakdown', label: 'Rating Share' },
+            { id: 'reasons', label: 'Complaints' },
+            { id: 'counters', label: 'Counter Rating' },
+          ].map((tab) => {
+            const isActive = activeChartTab === tab.id;
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                onPress={() => setActiveChartTab(tab.id as ChartTab)}
+                className="py-3 rounded-xl items-center justify-center"
+                style={{
+                  flex: 1,
+                  backgroundColor: isActive ? '#ffffff' : 'transparent',
+                  elevation: isActive ? 2 : 0,
+                }}
+              >
+                <Text
+                  className="text-base font-bold text-center"
+                  style={{ color: isActive ? '#0f766e' : '#475569', fontWeight: isActive ? '800' : '600' }}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* Render Active Chart View */}
+        {activeChartTab === 'breakdown' && (
+          <RatingBreakdownChart evaluations={filteredEvaluations} />
+        )}
+        {activeChartTab === 'reasons' && (
+          <ReasonDistributionChart evaluations={filteredEvaluations} reasonsList={reasonsList} />
+        )}
+        {activeChartTab === 'counters' && (
+          <CounterPerformanceChart evaluations={filteredEvaluations} />
+        )}
+
+        {/* Recent Feedback Feed List */}
         <SectionTitle title="Recent Passenger Feedback" subtitle="Live feed from deployed kiosk devices." />
         {loading ? (
           <Text className="text-slate-500 py-4">Loading evaluation records...</Text>
+        ) : filteredEvaluations.length === 0 ? (
+          <AppCard className="py-8 items-center justify-center mb-4">
+            <Text className="text-slate-500 font-semibold text-base">
+              No evaluation records match the selected filters.
+            </Text>
+          </AppCard>
         ) : (
-          evaluations.map((item) => {
+          filteredEvaluations.map((item) => {
             const ratingVal = getRatingVal(item);
             const counterText = item.checkinCounterName ? ` • ${item.checkinCounterName}` : '';
             return (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppButton, AppCard, SectionTitle } from '@/components/ui';
@@ -8,7 +8,7 @@ import { ScrollView, Text, TextInput, View } from '@/tw';
 
 export default function AdminLoginScreen() {
   const router = useRouter();
-  const { registerDeviceNow, setAdminUnlocked } = useSession();
+  const { session, isAdminUnlocked, isLoaded, registerDeviceNow, setAdminUnlocked } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
 
@@ -16,6 +16,17 @@ export default function AdminLoginScreen() {
   const [password, setPassword] = useState('123456');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Auto redirect to active session if already signed in
+  useEffect(() => {
+    if (isLoaded && isAdminUnlocked) {
+      if (session?.flightNo) {
+        router.replace('/admin/dashboard' as never);
+      } else {
+        router.replace('/admin/select-flight' as never);
+      }
+    }
+  }, [isAdminUnlocked, isLoaded, session]);
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {

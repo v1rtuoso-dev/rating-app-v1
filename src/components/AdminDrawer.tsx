@@ -44,7 +44,7 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
     }
     const success = await changeAdminPin(newPinInput);
     if (success) {
-      setPinChangeMessage('✅ Admin PIN updated successfully!');
+      setPinChangeMessage('Admin PIN updated successfully!');
       setTimeout(() => {
         setPinChangeModalVisible(false);
         setNewPinInput('');
@@ -60,10 +60,10 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
   return (
     <>
       <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-        <View className="flex-1 bg-slate-900/60 flex-row justify-end" onTouchStart={touchUserActivity}>
+        <View className="flex-1 flex-row justify-end" style={{ backgroundColor: 'rgba(15,23,42,0.6)' }} onTouchStart={touchUserActivity}>
           <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose} />
           
-          <View className="w-full max-w-[380px] bg-white h-full p-6 shadow-2xl border-l border-slate-200 justify-between">
+          <View className="w-full max-w-[380px] bg-white h-full p-6 border-l border-slate-200 justify-between" style={{ elevation: 12 }}>
             <View>
               {/* Header */}
               <View className="flex-row justify-between items-center pb-4 border-b border-slate-200 mb-6">
@@ -149,8 +149,8 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
 
       {/* Change PIN Modal */}
       <Modal visible={pinChangeModalVisible} transparent animationType="fade">
-        <View className="flex-1 bg-slate-900/60 justify-center items-center p-6">
-          <View className="bg-white rounded-3xl p-8 w-full max-w-[440px] border border-slate-200 shadow-2xl">
+        <View className="flex-1 justify-center items-center p-6" style={{ backgroundColor: 'rgba(15,23,42,0.6)' }}>
+          <View className="bg-white rounded-3xl p-8 w-full max-w-[440px] border border-slate-200" style={{ elevation: 12 }}>
             <Text className="text-2xl font-bold text-slate-900">Change Admin PIN</Text>
             <Text className="text-base text-slate-500 mt-1 mb-6">Enter a new 4+ digit PIN to secure Admin Mode.</Text>
 
@@ -160,16 +160,24 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
               value={newPinInput}
               onChangeText={setNewPinInput}
               placeholder="Enter new PIN (e.g. 654321)"
-              className="border border-slate-300 rounded-2xl p-5 bg-slate-50 text-slate-900 mb-3 text-center text-2xl font-bold tracking-widest"
+              textAlign="center"
+              textAlignVertical="center"
+              className="border border-slate-300 rounded-2xl p-5 bg-slate-50 text-slate-900 mb-3 text-2xl font-bold"
+              style={{ textAlign: 'center' }}
             />
             {pinChangeMessage ? (
-              <Text
-                className={`text-sm mb-4 text-center font-bold ${
-                  pinChangeMessage.includes('✅') ? 'text-teal-700' : 'text-red-600'
-                }`}
-              >
-                {pinChangeMessage}
-              </Text>
+              <View className="flex-row items-center justify-center gap-2 mb-4">
+                {pinChangeMessage.includes('successfully') ? (
+                  <Icon name="check" size={18} color="#0f766e" />
+                ) : null}
+                <Text
+                  className={`text-sm font-bold ${
+                    pinChangeMessage.includes('successfully') ? 'text-teal-700' : 'text-red-600'
+                  }`}
+                >
+                  {pinChangeMessage}
+                </Text>
+              </View>
             ) : null}
 
             <View className="flex-row gap-4 mt-2">

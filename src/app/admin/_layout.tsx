@@ -20,11 +20,7 @@ export default function AdminLayout() {
               backgroundColor: '#ffffff',
               borderTopWidth: 1,
               borderTopColor: '#cbd5e1',
-              elevation: 10,
-              shadowColor: '#0f172a',
-              shadowOffset: { width: 0, height: -3 },
-              shadowOpacity: 0.08,
-              shadowRadius: 8,
+              elevation: 8,
             }
           : { display: 'none' },
         tabBarLabelStyle: {

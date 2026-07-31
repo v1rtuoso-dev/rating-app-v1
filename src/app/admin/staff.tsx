@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { BackHandler, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AppButton, AppCard, SectionTitle, StatusBadge } from '@/components/ui';
+import { AppButton, AppCard, PageHeader, SectionTitle, StatusBadge } from '@/components/ui';
 import { AdminDrawer } from '@/components/AdminDrawer';
 import { useSession } from '@/features/session/SessionContext';
 import { ApiDevice, devicesApi } from '@/services/api/devicesApi';
@@ -24,6 +24,17 @@ export default function StaffScreen() {
     }
   }, [isAdminUnlocked, isLoaded, session]);
 
+  // Handle Android Back button: return to dashboard instead of Sign In
+  useEffect(() => {
+    const onBackPress = () => {
+      router.replace('/admin/dashboard' as never);
+      return true;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, []);
+
   useEffect(() => {
     (async () => {
       try {
@@ -44,22 +55,21 @@ export default function StaffScreen() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         className="flex-1 bg-slate-100"
-        contentContainerClassName={`flex-grow pt-8 pb-28 w-full self-center ${isTablet ? 'px-10 max-w-[1280px]' : 'px-6'}`}
+        contentContainerClassName={`flex-grow pt-8 pb-36 w-full self-center ${isTablet ? 'px-10 max-w-[1280px]' : 'px-6'}`}
       >
-        <View className="flex-row justify-between items-center mb-6">
-          <View>
-            <Text className="text-3xl font-extrabold text-slate-900">Registered Devices & Staff</Text>
-            <Text className="text-sm text-slate-500 mt-1.5">Manage deployed tablet kiosks and active devices.</Text>
-          </View>
-
-          <AppButton
-            title="Admin Menu"
-            icon="menu"
-            onPress={() => setDrawerVisible(true)}
-            variant="secondary"
-            fullWidth={false}
-          />
-        </View>
+        <PageHeader
+          title="Devices & Staff"
+          subtitle="Manage deployed tablet kiosks and active devices."
+          rightAction={
+            <AppButton
+              title="Admin Menu"
+              icon="menu"
+              onPress={() => setDrawerVisible(true)}
+              variant="secondary"
+              fullWidth={false}
+            />
+          }
+        />
 
         <SectionTitle title="Kiosk Devices" subtitle="Devices registered to record passenger ratings." />
         {loading ? (

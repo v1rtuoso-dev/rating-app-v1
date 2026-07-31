@@ -1,6 +1,8 @@
 import { colors as semanticColors } from './colors';
+import { typography } from './typography';
 
 export const theme = {
+  typography,
   colors: {
     primary: '#0f766e',
     primaryDark: '#115e59',
@@ -28,3 +30,5 @@ export const theme = {
     lg: 24,
   },
 } as const;
+
+export * from './typography';

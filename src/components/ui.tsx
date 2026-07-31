@@ -12,37 +12,55 @@ export type AppButtonProps = {
 };
 
 export function AppButton({ title, onPress, variant = 'primary', fullWidth = true, icon }: AppButtonProps) {
-  const bgClass =
-    variant === 'secondary'
-      ? 'bg-slate-200 border border-slate-300'
-      : variant === 'ghost'
-        ? 'bg-white border border-slate-300'
-        : 'bg-teal-700';
+  const isPrimary = variant === 'primary';
+  const isSecondary = variant === 'secondary';
 
-  const textClass = variant === 'primary' ? 'text-white' : 'text-slate-900';
-  const iconColor = variant === 'primary' ? '#ffffff' : '#1e293b';
-  const widthClass = fullWidth ? 'w-full' : 'w-auto';
+  const bgColor = isPrimary ? '#0f766e' : isSecondary ? '#e2e8f0' : '#ffffff';
+  const borderColor = isPrimary ? '#0f766e' : '#cbd5e1';
+  const textColor = isPrimary ? '#ffffff' : '#1e293b';
 
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
-      className={`flex-row rounded-2xl py-5 px-8 items-center justify-center mt-4 shadow-md ${bgClass} ${widthClass}`}
+      className="flex-row rounded-2xl py-5 px-8 items-center justify-center mt-4"
+      style={{
+        backgroundColor: bgColor,
+        borderWidth: isPrimary ? 0 : 1,
+        borderColor,
+        elevation: 3,
+        width: fullWidth ? '100%' : undefined,
+      }}
     >
       {icon ? (
         <View className="mr-2.5">
-          <Icon name={icon} size={22} color={iconColor} />
+          <Icon name={icon} size={22} color={textColor} />
         </View>
       ) : null}
-      <Text selectable className={`text-lg font-bold text-center ${textClass}`}>{title}</Text>
+      <Text selectable className="text-lg font-bold text-center" style={{ color: textColor }}>{title}</Text>
     </TouchableOpacity>
   );
 }
 
 export function AppCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <View className={`bg-white rounded-3xl p-8 border border-slate-200 shadow-md ${className}`}>
+    <View
+      className={`bg-white rounded-3xl p-8 border border-slate-200 ${className}`}
+      style={{ elevation: 2 }}
+    >
       {children}
+    </View>
+  );
+}
+
+export function PageHeader({ title, subtitle, rightAction }: { title: string; subtitle?: string; rightAction?: React.ReactNode }) {
+  return (
+    <View className="flex-row justify-between items-start mb-6">
+      <View className="flex-1 pr-4">
+        <Text selectable className="text-4xl font-black text-slate-900" style={{ lineHeight: 44 }}>{title}</Text>
+        {subtitle ? <Text selectable className="text-base text-slate-500 mt-1.5" style={{ lineHeight: 24 }}>{subtitle}</Text> : null}
+      </View>
+      {rightAction}
     </View>
   );
 }
@@ -50,15 +68,30 @@ export function AppCard({ children, className = '' }: { children: React.ReactNod
 export function SectionTitle({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <View className="mb-4">
-      <Text selectable className="text-2xl font-bold text-slate-900" style={{ lineHeight: 32 }}>{title}</Text>
+      <Text selectable className="text-2xl font-extrabold text-slate-900" style={{ lineHeight: 32 }}>{title}</Text>
       {subtitle ? <Text selectable className="text-base text-slate-500 mt-1" style={{ lineHeight: 22 }}>{subtitle}</Text> : null}
+    </View>
+  );
+}
+
+export function CardHeader({ title, subtitle, rightElement }: { title: string; subtitle?: string; rightElement?: React.ReactNode }) {
+  return (
+    <View className="flex-row justify-between items-center mb-5">
+      <View className="flex-1 pr-2">
+        <Text selectable className="text-xl font-extrabold text-slate-900" style={{ lineHeight: 28 }}>{title}</Text>
+        {subtitle ? <Text selectable className="text-sm font-semibold text-slate-500 mt-0.5" style={{ lineHeight: 20 }}>{subtitle}</Text> : null}
+      </View>
+      {rightElement}
     </View>
   );
 }
 
 export function MetricCard({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
-    <View className="bg-white rounded-2xl p-6 border border-slate-200 flex-1 min-h-[110px] justify-center shadow-sm">
+    <View
+      className="bg-white rounded-2xl p-6 border border-slate-200 flex-1 min-h-[110px] justify-center"
+      style={{ elevation: 1 }}
+    >
       <Text selectable className="text-sm font-semibold text-slate-500 mb-1 uppercase tracking-wider">{label}</Text>
       <Text selectable className="text-3xl font-black text-slate-900" style={accent ? { color: accent } : undefined}>
         {value}
@@ -69,7 +102,10 @@ export function MetricCard({ label, value, accent }: { label: string; value: str
 
 export function StatusBadge({ label, color }: { label: string; color?: string }) {
   return (
-    <View className="py-1.5 px-3.5 rounded-full self-start bg-teal-700" style={color ? { backgroundColor: color } : undefined}>
+    <View
+      className="py-1.5 px-3.5 rounded-full self-start"
+      style={{ backgroundColor: color || '#0f766e' }}
+    >
       <Text selectable className="text-white text-sm font-bold">{label}</Text>
     </View>
   );
@@ -83,7 +119,11 @@ export function RatingOption({ label, emoji, selected, onPress }: { label: strin
       className="items-center flex-1 py-4 px-2 justify-center"
     >
       <Text selectable className="text-center mb-3 text-7xl" style={{ lineHeight: 84 }}>{emoji}</Text>
-      <Text selectable className={`text-lg font-bold text-center ${selected ? 'text-teal-700 font-extrabold' : 'text-slate-800'}`}>
+      <Text
+        selectable
+        className="text-lg text-center"
+        style={{ color: selected ? '#0f766e' : '#1e293b', fontWeight: selected ? '800' : '700' }}
+      >
         {label}
       </Text>
     </TouchableOpacity>
@@ -95,23 +135,33 @@ export function ReasonChip({ label, selected, onPress }: { label: string; select
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
-      className={`flex-row items-center border rounded-2xl py-3.5 px-5 mr-3 mb-3 shadow-sm ${
-        selected ? 'bg-teal-700 border-teal-700' : 'bg-white border-slate-300'
-      }`}
+      className="flex-row items-center rounded-2xl py-3.5 px-5 mr-3 mb-3"
+      style={{
+        backgroundColor: selected ? '#0f766e' : '#ffffff',
+        borderWidth: 1,
+        borderColor: selected ? '#0f766e' : '#cbd5e1',
+        elevation: 1,
+      }}
     >
       <View
-        className={`w-6 h-6 rounded-lg items-center justify-center mr-3 border ${
-          selected ? 'bg-white border-white' : 'bg-slate-50 border-slate-300'
-        }`}
+        className="w-6 h-6 rounded-lg items-center justify-center mr-3"
+        style={{
+          backgroundColor: selected ? '#ffffff' : '#f8fafc',
+          borderWidth: 1,
+          borderColor: selected ? '#ffffff' : '#cbd5e1',
+        }}
       >
         {selected ? (
-          <Text className="text-teal-700 font-extrabold text-sm" style={{ lineHeight: 18 }}>✓</Text>
+          <Icon name="check" size={16} color="#0f766e" />
         ) : null}
       </View>
-      <Text selectable className={`text-base font-bold ${selected ? 'text-white' : 'text-slate-900'}`}>{label}</Text>
+      <Text
+        selectable
+        className="text-base"
+        style={{ color: selected ? '#ffffff' : '#0f172a', fontWeight: '700' }}
+      >
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 }
-
-
-

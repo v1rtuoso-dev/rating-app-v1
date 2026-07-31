@@ -1,4 +1,4 @@
-import { AppButton, AppCard, Icon, RatingOption, ReasonChip, SectionTitle } from '@/components/ui';
+import { AppButton, AppCard, Icon, RatingOption, ReasonChip, SectionTitle, StatusBadge } from '@/components/ui';
 import { useSession } from '@/features/session/SessionContext';
 import { CreateEvaluationPayload, evaluationsApi } from '@/services/api/evaluationsApi';
 import { flightApi } from '@/services/api/flightApi';
@@ -149,7 +149,7 @@ export default function KioskScreen() {
         <View className="flex-row justify-between items-center mb-6">
           <Image
             source={require('@/assets/images/hgs-logo.png')}
-            style={{ width: 480, height: 135 }}
+            style={{ width: 340, height: 95, maxWidth: '80%' }}
             resizeMode="contain"
           />
 
@@ -166,13 +166,72 @@ export default function KioskScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Title & Flight Session Subheader */}
-        <View className="mb-8">
+        {/* Title & Flight Session Header */}
+        <View className="mb-6">
           <Text className="text-4xl font-black text-slate-900" style={{ lineHeight: 48 }}>Passenger Feedback</Text>
-          <Text className="text-lg font-semibold text-slate-500 mt-1" style={{ lineHeight: 24 }}>
-            Flight {session?.flightNo || activeFlight?.flightNo || 'WE272'} • {session?.counter || 'Counter A'}
+          <Text className="text-base font-semibold text-slate-500 mt-1" style={{ lineHeight: 22 }}>
+            Please share your check-in experience for your active flight.
           </Text>
         </View>
+
+        {/* Comprehensive Flight Information Card */}
+        {(() => {
+          const flightNo = (session?.flightNo || activeFlight?.flightNo || 'WE272').trim();
+          const route = (session?.route || activeFlight?.route || 'SGN → BKK').trim();
+          const counter = (session?.counter || 'Counter A').trim();
+          const flightDate = (activeFlight?.flightDate || new Date().toISOString().split('T')[0]).trim();
+          const flightTime = (activeFlight?.flightDateTime?.split('T')[1]?.substring(0, 5) || activeFlight?.flightTime || '10:30').trim();
+          
+          const rawAcno = (activeFlight?.acno || '').trim();
+          const rawActp = (activeFlight?.actp || '').trim();
+          const aircraft = rawAcno ? `${rawAcno}${rawActp ? ` (${rawActp})` : ''}` : (rawActp || 'A321');
+
+          return (
+            <View
+              className="bg-white rounded-3xl p-6 mb-8 border border-slate-200"
+              style={{ elevation: 3 }}
+            >
+              <View className="flex-row flex-wrap justify-between items-center gap-4">
+                {/* Flight Number & Route */}
+                <View className="flex-1 min-w-[200px]">
+                  <View className="flex-row items-center gap-2 mb-1">
+                    <Text className="text-xs font-black text-teal-700 uppercase tracking-wider">Active Flight</Text>
+                  </View>
+                  <Text className="text-3xl font-black text-slate-900" style={{ lineHeight: 38 }}>
+                    {flightNo}
+                  </Text>
+                  <Text className="text-base font-bold text-teal-800 mt-0.5" style={{ lineHeight: 22 }}>
+                    {route}
+                  </Text>
+                </View>
+
+                {/* Counter, Departure & Aircraft Details */}
+                <View className="flex-row flex-wrap items-center gap-3">
+                  <View className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5">
+                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Check-in Location</Text>
+                    <Text className="text-base font-extrabold text-slate-900">{counter}</Text>
+                  </View>
+
+                  <View className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5">
+                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Departure</Text>
+                    <View className="flex-row items-center gap-1.5">
+                      <Icon name="clock" size={18} color="#0f766e" />
+                      <Text className="text-base font-bold text-slate-800">{flightTime} ({flightDate})</Text>
+                    </View>
+                  </View>
+
+                  <View className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5">
+                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Aircraft</Text>
+                    <View className="flex-row items-center gap-1.5">
+                      <Icon name="flight" size={18} color="#0f766e" />
+                      <Text className="text-base font-bold text-slate-800">{aircraft}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+          );
+        })()}
 
         {step === 'rating' && (
           <AppCard>
@@ -223,15 +282,17 @@ export default function KioskScreen() {
         )}
 
         {step === 'thankyou' && (
-          <AppCard className="items-center py-12">
-            <Text className="text-center mb-4" style={{ fontSize: 72, lineHeight: 84 }}>🎉</Text>
-            <Text className="text-4xl font-black text-slate-900 text-center" style={{ lineHeight: 48 }}>Thank You!</Text>
-            <Text className="text-lg text-slate-500 text-center mt-3 max-w-[560px]" style={{ lineHeight: 26 }}>
-              Your feedback helps us continuously elevate our service quality. Have a safe and pleasant flight!
-            </Text>
+          <AppCard>
+            <View className="items-center justify-center py-4 min-h-[236px]">
+              <Text className="text-center mb-2" style={{ fontSize: 64, lineHeight: 72 }}>🎉</Text>
+              <Text className="text-4xl font-black text-slate-900 text-center" style={{ lineHeight: 44 }}>Thank You!</Text>
+              <Text className="text-base font-bold text-slate-500 text-center mt-2 max-w-[540px]" style={{ lineHeight: 22 }}>
+                Your feedback helps us continuously elevate our service quality. Have a safe and pleasant flight!
+              </Text>
 
-            <View className="mt-10 w-full max-w-[400px]">
-              <AppButton title="Submit Another Rating" onPress={resetForm} />
+              <View className="mt-6 w-full max-w-[340px]">
+                <AppButton title="Submit Another Rating" onPress={resetForm} />
+              </View>
             </View>
           </AppCard>
         )}
@@ -239,8 +300,8 @@ export default function KioskScreen() {
 
       {/* Admin PIN Authentication Modal */}
       <Modal visible={pinModalVisible} transparent animationType="fade">
-        <View className="flex-1 bg-slate-900/60 justify-center items-center p-6">
-          <View className="bg-white rounded-3xl p-8 w-full max-w-[460px] border border-slate-200 shadow-2xl">
+        <View className="flex-1 justify-center items-center p-6" style={{ backgroundColor: 'rgba(15,23,42,0.6)' }}>
+          <View className="bg-white rounded-3xl p-8 w-full max-w-[460px] border border-slate-200" style={{ elevation: 10 }}>
             <Text className="text-2xl font-bold text-slate-900">Admin Authentication</Text>
             <Text className="text-base text-slate-500 mt-1 mb-6">Enter Admin PIN/Password to access settings.</Text>
 
@@ -250,7 +311,10 @@ export default function KioskScreen() {
               value={pinInput}
               onChangeText={setPinInput}
               placeholder="Enter PIN"
-              className="border border-slate-300 rounded-2xl p-5 bg-slate-50 text-slate-900 mb-2 text-center text-2xl font-bold tracking-widest"
+              textAlign="center"
+              textAlignVertical="center"
+              className="border border-slate-300 rounded-2xl p-5 bg-slate-50 text-slate-900 mb-2 text-2xl font-bold"
+              style={{ textAlign: 'center' }}
             />
             {pinError ? <Text className="text-red-600 text-sm mb-4 text-center font-semibold">{pinError}</Text> : null}
 
