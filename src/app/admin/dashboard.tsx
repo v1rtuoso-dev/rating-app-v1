@@ -4,6 +4,7 @@ import { RatingBreakdownChart } from '@/components/charts/RatingBreakdownChart';
 import { ReasonDistributionChart } from '@/components/charts/ReasonDistributionChart';
 import { AppButton, AppCard, Icon, MetricCard, PageHeader, SectionTitle, StatusBadge } from '@/components/ui';
 import { useSession } from '@/features/session/SessionContext';
+import i18n from '@/i18n';
 import { ApiEvaluation, evaluationsApi } from '@/services/api/evaluationsApi';
 import { reasonsApi, UnsatisfiedReason } from '@/services/api/reasonsApi';
 import { theme } from '@/theme';
@@ -57,6 +58,7 @@ export default function AdminDashboardScreen() {
   const { session, isAdminUnlocked, isLoaded, lockAdmin, touchUserActivity } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
+  const t = i18n.t.bind(i18n);
 
   const [evaluations, setEvaluations] = useState<ApiEvaluation[]>([]);
   const [reasonsList, setReasonsList] = useState<UnsatisfiedReason[]>([]);
@@ -148,8 +150,8 @@ export default function AdminDashboardScreen() {
   if (!isAdminUnlocked) {
     return (
       <View className="flex-1 bg-slate-100 justify-center items-center p-6">
-        <Text className="text-xl font-bold text-slate-900 mb-2">Admin Session Locked</Text>
-        <Text className="text-sm text-slate-500 mb-4">Redirecting to passenger Kiosk Mode...</Text>
+        <Text className="text-xl font-bold text-slate-900 mb-2">{t('adminSessionLocked')}</Text>
+        <Text className="text-sm text-slate-500 mb-4">{t('redirectingToKiosk')}</Text>
       </View>
     );
   }
@@ -163,11 +165,11 @@ export default function AdminDashboardScreen() {
       >
         {/* Header Bar */}
         <PageHeader
-          title="Operations Dashboard"
-          subtitle={`Active: Flight ${session?.flightNo || 'WE272'} • ${session?.counter || 'Counter A'}`}
+          title={t('operationsDashboard')}
+          subtitle={`${t('activeFlightLabel')} ${session?.flightNo || 'WE272'} • ${session?.counter || 'Counter A'}`}
           rightAction={
             <AppButton
-              title="Admin Menu"
+              title={t('adminMenu')}
               icon="menu"
               onPress={() => setDrawerVisible(true)}
               variant="secondary"
@@ -179,10 +181,10 @@ export default function AdminDashboardScreen() {
         {/* Filter Controls Section */}
         <View className="bg-white rounded-3xl p-6 border border-slate-200 mb-6" style={{ elevation: 2 }}>
           <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-xl font-extrabold text-slate-900">Filter Analytics & Records</Text>
+            <Text className="text-xl font-extrabold text-slate-900">{t('filterAnalytics')}</Text>
             {hasActiveFilters ? (
               <TouchableOpacity onPress={clearAllFilters} className="bg-rose-50 px-3.5 py-1.5 rounded-full border border-rose-200">
-                <Text className="text-sm font-bold text-rose-700">✕ Clear Filters</Text>
+                <Text className="text-sm font-bold text-rose-700">{t('clearFilters')}</Text>
               </TouchableOpacity>
             ) : null}
           </View>
@@ -195,7 +197,7 @@ export default function AdminDashboardScreen() {
             <TextInput
               value={searchKeyword}
               onChangeText={setSearchKeyword}
-              placeholder="Search counter, flight ID, or device..."
+              placeholder={t('searchPlaceholder')}
               className="flex-1 text-slate-900 text-base font-semibold"
             />
             {searchKeyword ? (
@@ -207,11 +209,11 @@ export default function AdminDashboardScreen() {
 
           {/* Time Window Pills */}
           <View className="mb-4">
-            <Text className="text-sm font-extrabold text-slate-500 uppercase tracking-wider mb-2">Time Range</Text>
+            <Text className="text-sm font-extrabold text-slate-500 uppercase tracking-wider mb-2">{t('timeRange')}</Text>
             <View className="flex-row gap-2.5">
               {[
-                { id: 'all', label: 'All Time' },
-                { id: 'today', label: 'Today' },
+                { id: 'all', label: t('allTime') },
+                { id: 'today', label: t('today') },
               ].map((item) => {
                 const isActive = timeFilter === item.id;
                 return (
@@ -236,14 +238,14 @@ export default function AdminDashboardScreen() {
 
           {/* Rating Level Pills */}
           <View>
-            <Text className="text-sm font-extrabold text-slate-500 uppercase tracking-wider mb-2">Rating Level</Text>
+            <Text className="text-sm font-extrabold text-slate-500 uppercase tracking-wider mb-2">{t('ratingLevel')}</Text>
             <View className="flex-row flex-wrap gap-2.5">
               {[
-                { id: 'all', label: 'All Ratings' },
-                { id: 4, label: '😍 4 Stars' },
-                { id: 3, label: '😊 3 Stars' },
-                { id: 2, label: '😐 2 Stars' },
-                { id: 1, label: '😞 1 Star' },
+                { id: 'all', label: t('allRatings') },
+                { id: 4, label: t('stars4') },
+                { id: 3, label: t('stars3') },
+                { id: 2, label: t('stars2') },
+                { id: 1, label: t('stars1') },
               ].map((item) => {
                 const isActive = ratingFilter === item.id;
                 return (
@@ -269,24 +271,24 @@ export default function AdminDashboardScreen() {
 
         {/* Metric Cards Row */}
         <View className="flex-row gap-3 mb-3">
-          <MetricCard label="Total Reviews" value={totalReviews.toString()} accent={theme.colors.primary} />
-          <MetricCard label="Satisfaction Rate" value={`${satisfactionRate}%`} accent={theme.colors.success} />
+          <MetricCard label={t('totalReviews')} value={totalReviews.toString()} accent={theme.colors.primary} />
+          <MetricCard label={t('satisfactionRate')} value={`${satisfactionRate}%`} accent={theme.colors.success} />
         </View>
         <View className="flex-row gap-3 mb-6">
-          <MetricCard label="Avg Rating" value={avgRating} accent={theme.colors.warning} />
-          <MetricCard label="Excellent (4 ⭐)" value={excellentReviews.toString()} accent={theme.colors.accent} />
+          <MetricCard label={t('avgRating')} value={avgRating} accent={theme.colors.warning} />
+          <MetricCard label={t('excellent4')} value={excellentReviews.toString()} accent={theme.colors.accent} />
         </View>
 
         {/* Interactive Charts Section Header & Tab Switcher */}
         <View className="flex-row justify-between items-center mb-4">
-          <SectionTitle title="Analytics & Visual Insights" subtitle="Visual rating breakdowns and trend analysis." />
+          <SectionTitle title={t('analyticsInsights')} subtitle={t('analyticsSubtitle')} />
         </View>
 
         <View className="flex-row bg-slate-200/80 p-1.5 rounded-2xl mb-6 border border-slate-300">
           {[
-            { id: 'breakdown', label: 'Rating Share' },
-            { id: 'reasons', label: 'Complaints' },
-            { id: 'counters', label: 'Counter Rating' },
+            { id: 'breakdown', label: t('ratingShare') },
+            { id: 'reasons', label: t('complaints') },
+            { id: 'counters', label: t('counterRating') },
           ].map((tab) => {
             const isActive = activeChartTab === tab.id;
             return (
@@ -323,13 +325,13 @@ export default function AdminDashboardScreen() {
         )}
 
         {/* Recent Feedback Feed List */}
-        <SectionTitle title="Recent Passenger Feedback" subtitle="Live feed from deployed kiosk devices." />
+        <SectionTitle title={t('recentFeedback')} subtitle={t('recentFeedbackSubtitle')} />
         {loading ? (
-          <Text className="text-slate-500 py-4">Loading evaluation records...</Text>
+          <Text className="text-slate-500 py-4">{t('loadingRecords')}</Text>
         ) : filteredEvaluations.length === 0 ? (
           <AppCard className="py-8 items-center justify-center mb-4">
             <Text className="text-slate-500 font-semibold text-base">
-              No evaluation records match the selected filters.
+              {t('noRecordsMatch')}
             </Text>
           </AppCard>
         ) : (
@@ -340,7 +342,7 @@ export default function AdminDashboardScreen() {
               <AppCard key={item.id} className="mb-3">
                 <View className="flex-row justify-between items-center">
                   <Text className="text-base font-bold text-slate-900">
-                    {item.deviceName || 'Kiosk Device'}{counterText} • Flight #{item.flightId}
+                    {item.deviceName || t('kioskDevice')}{counterText} • Flight #{item.flightId}
                   </Text>
                   <StatusBadge
                     label={`${ratingVal}/4`}

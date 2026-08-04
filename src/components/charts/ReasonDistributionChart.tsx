@@ -1,5 +1,6 @@
 import React from 'react';
 import { CardHeader } from '@/components/ui';
+import { useLocale } from '@/i18n';
 import { ApiEvaluation } from '@/services/api/evaluationsApi';
 import { UnsatisfiedReason } from '@/services/api/reasonsApi';
 import { Text, View } from '@/tw';
@@ -10,6 +11,7 @@ export type ReasonDistributionChartProps = {
 };
 
 export function ReasonDistributionChart({ evaluations, reasonsList }: ReasonDistributionChartProps) {
+  const { t } = useLocale();
   const reasonCounts: Record<number, number> = {};
 
   evaluations.forEach((item) => {
@@ -35,13 +37,13 @@ export function ReasonDistributionChart({ evaluations, reasonsList }: ReasonDist
     return (
       <View className="bg-white rounded-3xl p-6 border border-slate-200 mb-6" style={{ elevation: 2 }}>
         <CardHeader
-          title="Unsatisfied Reasons Analysis"
-          subtitle="Breakdown of specific complaint reasons"
+          title={t('unsatisfiedReasonsTitle')}
+          subtitle={t('unsatisfiedReasonsSubtitle')}
         />
         <View className="py-6 bg-slate-50 rounded-2xl items-center justify-center border border-slate-200/60">
           <Text className="text-2xl mb-1">🎉</Text>
-          <Text className="text-sm font-bold text-slate-700">No Unsatisfied Reasons Logged</Text>
-          <Text className="text-xs text-slate-500 mt-0.5">All recent ratings are positive or neutral without complaints.</Text>
+          <Text className="text-sm font-bold text-slate-700">{t('noUnsatisfiedReasons')}</Text>
+          <Text className="text-xs text-slate-500 mt-0.5">{t('noUnsatisfiedDesc')}</Text>
         </View>
       </View>
     );
@@ -50,11 +52,11 @@ export function ReasonDistributionChart({ evaluations, reasonsList }: ReasonDist
   return (
     <View className="bg-white rounded-3xl p-6 border border-slate-200 mb-6" style={{ elevation: 2 }}>
       <CardHeader
-        title="Unsatisfied Reasons Analysis"
-        subtitle="Passengers can select multiple complaint reasons per evaluation."
+        title={t('unsatisfiedReasonsTitle')}
+        subtitle={t('unsatisfiedReasonsSubtitle')}
         rightElement={
           <View className="bg-rose-50 px-3.5 py-1.5 rounded-full border border-rose-200">
-            <Text className="text-xs font-bold text-rose-700">{totalReasonsCount} Selections Logged</Text>
+            <Text className="text-xs font-bold text-rose-700">{totalReasonsCount} {t('selectionsLogged')}</Text>
           </View>
         }
       />

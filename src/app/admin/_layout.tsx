@@ -2,9 +2,11 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Icon } from '@/components/ui';
 import { useSession } from '@/features/session/SessionContext';
+import { useLocale } from '@/i18n';
 
 export default function AdminLayout() {
   const { isAdminUnlocked } = useSession();
+  const { t } = useLocale();
 
   return (
     <Tabs
@@ -40,7 +42,7 @@ export default function AdminLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: t('navDashboard'),
           tabBarIcon: ({ color }) => (
             <Icon name="dashboard" size={28} color={color} />
           ),
@@ -49,7 +51,7 @@ export default function AdminLayout() {
       <Tabs.Screen
         name="select-flight"
         options={{
-          title: 'Change Flight',
+          title: t('navChangeFlight'),
           tabBarIcon: ({ color }) => (
             <Icon name="flight" size={28} color={color} />
           ),
@@ -58,7 +60,7 @@ export default function AdminLayout() {
       <Tabs.Screen
         name="staff"
         options={{
-          title: 'Devices & Staff',
+          title: t('navDevicesStaff'),
           tabBarIcon: ({ color }) => (
             <Icon name="devices" size={28} color={color} />
           ),

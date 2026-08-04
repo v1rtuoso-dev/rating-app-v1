@@ -53,14 +53,30 @@ export function AppCard({ children, className = '' }: { children: React.ReactNod
   );
 }
 
+import { useLocale } from '@/i18n';
+
 export function PageHeader({ title, subtitle, rightAction }: { title: string; subtitle?: string; rightAction?: React.ReactNode }) {
+  const { locale, toggleLocale } = useLocale();
+
   return (
     <View className="flex-row justify-between items-start mb-6">
       <View className="flex-1 pr-4">
         <Text selectable className="text-4xl font-black text-slate-900" style={{ lineHeight: 44 }}>{title}</Text>
         {subtitle ? <Text selectable className="text-base text-slate-500 mt-1.5" style={{ lineHeight: 24 }}>{subtitle}</Text> : null}
       </View>
-      {rightAction}
+      <View className="flex-row items-center gap-3">
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={toggleLocale}
+          className="px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200"
+          style={{ elevation: 2 }}
+        >
+          <Text className="text-base font-bold text-slate-700">
+            {locale === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}
+          </Text>
+        </TouchableOpacity>
+        {rightAction}
+      </View>
     </View>
   );
 }
@@ -135,30 +151,30 @@ export function ReasonChip({ label, selected, onPress }: { label: string; select
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
-      className="flex-row items-center rounded-2xl py-3.5 px-5 mr-3 mb-3"
+      className="flex-row items-center rounded-2xl py-4 px-6 mb-1"
       style={{
-        backgroundColor: selected ? '#0f766e' : '#ffffff',
-        borderWidth: 1,
+        backgroundColor: selected ? '#0f766e' : '#f8fafc',
+        borderWidth: 2,
         borderColor: selected ? '#0f766e' : '#cbd5e1',
-        elevation: 1,
+        elevation: selected ? 2 : 1,
       }}
     >
       <View
-        className="w-6 h-6 rounded-lg items-center justify-center mr-3"
+        className="w-7 h-7 rounded-xl items-center justify-center mr-3.5"
         style={{
-          backgroundColor: selected ? '#ffffff' : '#f8fafc',
-          borderWidth: 1,
+          backgroundColor: selected ? '#ffffff' : '#ffffff',
+          borderWidth: 1.5,
           borderColor: selected ? '#ffffff' : '#cbd5e1',
         }}
       >
         {selected ? (
-          <Icon name="check" size={16} color="#0f766e" />
+          <Icon name="check" size={18} color="#0f766e" />
         ) : null}
       </View>
       <Text
         selectable
-        className="text-base"
-        style={{ color: selected ? '#ffffff' : '#0f172a', fontWeight: '700' }}
+        className="text-lg flex-1"
+        style={{ color: selected ? '#ffffff' : '#0f172a', fontWeight: '800' }}
       >
         {label}
       </Text>

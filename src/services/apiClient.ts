@@ -2,9 +2,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { Platform } from 'react-native';
 import { storage } from './storage';
 
-export const API_BASE_URL = Platform.OS === 'web'
-  ? '/api-proxy/'
-  : 'https://api.hgs.vn:8445/ApiCore/';
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || (Platform.OS === 'web' ? '/api-proxy/' : '');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

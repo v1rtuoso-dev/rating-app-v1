@@ -1,27 +1,100 @@
-import { AppButton, AppCard, Icon, RatingOption, ReasonChip, SectionTitle, StatusBadge } from '@/components/ui';
+import { AppButton, AppCard, Icon, ReasonChip } from '@/components/ui';
 import { useSession } from '@/features/session/SessionContext';
+import { useLocale } from '@/i18n';
 import { CreateEvaluationPayload, evaluationsApi } from '@/services/api/evaluationsApi';
 import { flightApi } from '@/services/api/flightApi';
 import { reasonsApi, UnsatisfiedReason } from '@/services/api/reasonsApi';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from '@/tw';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Image, Modal, useWindowDimensions } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Image, Modal, useWindowDimensions } from 'react-native';
 
 type Step = 'rating' | 'reasons' | 'thankyou';
 
-const ratings = [
-  { level: 4, label: 'Very Satisfied', emoji: '😍' },
-  { level: 3, label: 'Satisfied', emoji: '😊' },
-  { level: 2, label: 'Neutral', emoji: '😐' },
-  { level: 1, label: 'Very Unsatisfied', emoji: '😞' },
-];
+// Floating animated rating emoji component
+function FloatingEmoji({
+  emoji,
+  onPress,
+  delay = 0,
+}: {
+  emoji: string;
+  onPress: () => void;
+  delay?: number;
+}) {
+  const translateY = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    // Gentle floating loop animation
+    const floatingAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.delay(delay),
+        Animated.timing(translateY, {
+          toValue: -14,
+          duration: 1400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: 1400,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    floatingAnimation.start();
+    return () => floatingAnimation.stop();
+  }, [delay]);
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 1.3,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 3,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      className="items-center justify-center flex-1 py-4"
+    >
+      <Animated.Text
+        style={{
+          fontSize: 155,
+          lineHeight: 175,
+          textAlign: 'center',
+          transform: [{ translateY }, { scale }],
+        }}
+      >
+        {emoji}
+      </Animated.Text>
+    </TouchableOpacity>
+  );
+}
 
 export default function KioskScreen() {
   const router = useRouter();
   const { session, currentDevice, unlockAdmin, touchUserActivity } = useSession();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
+  const { locale, toggleLocale, t } = useLocale();
+
+  const ratings = [
+    { level: 4, emoji: '😍' },
+    { level: 3, emoji: '😊' },
+    { level: 2, emoji: '😐' },
+    { level: 1, emoji: '😞' },
+  ];
 
   const [step, setStep] = useState<Step>('rating');
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
@@ -67,6 +140,8 @@ export default function KioskScreen() {
     })();
   }, [session]);
 
+  const [reasonsActivityKey, setReasonsActivityKey] = useState(0);
+
   // Auto reset timer on Thank You step
   useEffect(() => {
     if (step === 'thankyou') {
@@ -76,6 +151,21 @@ export default function KioskScreen() {
       return () => clearTimeout(timer);
     }
   }, [step]);
+
+  // Auto submit timer on Reasons step after 15s of inactivity
+  useEffect(() => {
+    if (step === 'reasons') {
+      const timer = setTimeout(() => {
+        console.log('Inactivity timeout on reasons step: auto-submitting evaluation...');
+        handleSubmit(selectedRating ?? 1, selectedReasons);
+      }, 15000);
+      return () => clearTimeout(timer);
+    }
+  }, [step, selectedReasons, selectedRating, reasonsActivityKey]);
+
+  const resetReasonsTimer = () => {
+    setReasonsActivityKey((prev) => prev + 1);
+  };
 
   const resetForm = () => {
     setSelectedRating(null);
@@ -96,6 +186,7 @@ export default function KioskScreen() {
     setSelectedReasons((prev) =>
       prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]
     );
+    resetReasonsTimer();
   };
 
   const handleSubmit = async (overrideRating?: number, overrideReasons?: number[]) => {
@@ -133,168 +224,172 @@ export default function KioskScreen() {
       touchUserActivity();
       router.push('/admin/dashboard' as never);
     } else {
-      setPinError('Invalid Admin PIN.');
+      setPinError(t('invalidPin'));
     }
   };
+
+  const flightNo = (session?.flightNo || activeFlight?.flightNo || 'WE272').trim();
+  const route = (session?.route || activeFlight?.route || 'SGN → BKK').trim();
 
   return (
     <View className="flex-1 bg-slate-100">
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         className="flex-1 bg-slate-100"
-        contentContainerClassName={`flex-grow pt-8 pb-28 w-full self-center justify-center ${isLandscape ? 'px-10 max-w-[1280px]' : 'px-6'
-          }`}
+        contentContainerClassName={`flex-grow pt-6 pb-28 w-full self-center justify-center ${
+          isLandscape ? 'px-10 max-w-[1280px]' : 'px-6'
+        }`}
       >
-        {/* Top Header with HGS Logo & Lock Icon */}
-        <View className="flex-row justify-between items-center mb-6">
-          <Image
-            source={require('@/assets/images/hgs-logo.png')}
-            style={{ width: 340, height: 95, maxWidth: '80%' }}
-            resizeMode="contain"
-          />
+        {/* Top Header with HGS Logo (Left Aligned), Language Toggle & Lock Icon */}
+        <View className="flex-row justify-between items-center mb-2">
+          <View className="-ml-4">
+            <Image
+              source={require('@/assets/images/hgs-logo.png')}
+              style={{ width: 220, height: 75, marginLeft: -4 }}
+              resizeMode="contain"
+            />
+          </View>
 
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              setPinInput('');
-              setPinError('');
-              setPinModalVisible(true);
-            }}
-            className="p-2 opacity-70"
-          >
-            <Icon name="lock-outline" size={36} color="#475569" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Title & Flight Session Header */}
-        <View className="mb-6">
-          <Text className="text-4xl font-black text-slate-900" style={{ lineHeight: 48 }}>Passenger Feedback</Text>
-          <Text className="text-base font-semibold text-slate-500 mt-1" style={{ lineHeight: 22 }}>
-            Please share your check-in experience for your active flight.
-          </Text>
-        </View>
-
-        {/* Comprehensive Flight Information Card */}
-        {(() => {
-          const flightNo = (session?.flightNo || activeFlight?.flightNo || 'WE272').trim();
-          const route = (session?.route || activeFlight?.route || 'SGN → BKK').trim();
-          const counter = (session?.counter || 'Counter A').trim();
-          const flightDate = (activeFlight?.flightDate || new Date().toISOString().split('T')[0]).trim();
-          const flightTime = (activeFlight?.flightDateTime?.split('T')[1]?.substring(0, 5) || activeFlight?.flightTime || '10:30').trim();
-          
-          const rawAcno = (activeFlight?.acno || '').trim();
-          const rawActp = (activeFlight?.actp || '').trim();
-          const aircraft = rawAcno ? `${rawAcno}${rawActp ? ` (${rawActp})` : ''}` : (rawActp || 'A321');
-
-          return (
-            <View
-              className="bg-white rounded-3xl p-6 mb-8 border border-slate-200"
-              style={{ elevation: 3 }}
+          <View className="flex-row items-center gap-3">
+            {/* Language Toggle Button */}
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={toggleLocale}
+              className="px-3.5 py-2 rounded-xl bg-white border border-slate-200"
+              style={{ elevation: 2 }}
             >
-              <View className="flex-row flex-wrap justify-between items-center gap-4">
-                {/* Flight Number & Route */}
-                <View className="flex-1 min-w-[200px]">
-                  <View className="flex-row items-center gap-2 mb-1">
-                    <Text className="text-xs font-black text-teal-700 uppercase tracking-wider">Active Flight</Text>
-                  </View>
-                  <Text className="text-3xl font-black text-slate-900" style={{ lineHeight: 38 }}>
-                    {flightNo}
-                  </Text>
-                  <Text className="text-base font-bold text-teal-800 mt-0.5" style={{ lineHeight: 22 }}>
-                    {route}
-                  </Text>
-                </View>
-
-                {/* Counter, Departure & Aircraft Details */}
-                <View className="flex-row flex-wrap items-center gap-3">
-                  <View className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5">
-                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Check-in Location</Text>
-                    <Text className="text-base font-extrabold text-slate-900">{counter}</Text>
-                  </View>
-
-                  <View className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5">
-                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Departure</Text>
-                    <View className="flex-row items-center gap-1.5">
-                      <Icon name="clock" size={18} color="#0f766e" />
-                      <Text className="text-base font-bold text-slate-800">{flightTime} ({flightDate})</Text>
-                    </View>
-                  </View>
-
-                  <View className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5">
-                    <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Aircraft</Text>
-                    <View className="flex-row items-center gap-1.5">
-                      <Icon name="flight" size={18} color="#0f766e" />
-                      <Text className="text-base font-bold text-slate-800">{aircraft}</Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-          );
-        })()}
-
-        {step === 'rating' && (
-          <AppCard>
-            <SectionTitle
-              title="How was your service experience today?"
-              subtitle="Please tap an option to submit your rating."
-            />
-            <View className={`mt-6 ${isLandscape ? 'flex-row gap-4' : 'gap-4'}`}>
-              {ratings.map((item) => (
-                <RatingOption
-                  key={item.level}
-                  label={item.label}
-                  emoji={item.emoji}
-                  selected={selectedRating === item.level}
-                  onPress={() => handleSelectRating(item.level)}
-                />
-              ))}
-            </View>
-          </AppCard>
-        )}
-
-        {step === 'reasons' && (
-          <AppCard>
-            <SectionTitle
-              title="What could we improve?"
-              subtitle="Select one or more reasons that impacted your check-in experience."
-            />
-            <View className="flex-row flex-wrap mt-6">
-              {apiReasons.map((reason) => (
-                <ReasonChip
-                  key={reason.id}
-                  label={reason.reasonName}
-                  selected={selectedReasons.includes(reason.id)}
-                  onPress={() => toggleReason(reason.id)}
-                />
-              ))}
-            </View>
-
-            <View className="mt-8 flex-row gap-4">
-              <View className="flex-1">
-                <AppButton title="Back" onPress={() => setStep('rating')} variant="secondary" />
-              </View>
-              <View className="flex-1">
-                <AppButton title="Submit Feedback" onPress={() => handleSubmit()} />
-              </View>
-            </View>
-          </AppCard>
-        )}
-
-        {step === 'thankyou' && (
-          <AppCard>
-            <View className="items-center justify-center py-4 min-h-[236px]">
-              <Text className="text-center mb-2" style={{ fontSize: 64, lineHeight: 72 }}>🎉</Text>
-              <Text className="text-4xl font-black text-slate-900 text-center" style={{ lineHeight: 44 }}>Thank You!</Text>
-              <Text className="text-base font-bold text-slate-500 text-center mt-2 max-w-[540px]" style={{ lineHeight: 22 }}>
-                Your feedback helps us continuously elevate our service quality. Have a safe and pleasant flight!
+              <Text className="text-base font-bold text-slate-700">
+                {locale === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}
               </Text>
+            </TouchableOpacity>
 
-              <View className="mt-6 w-full max-w-[340px]">
-                <AppButton title="Submit Another Rating" onPress={resetForm} />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setPinInput('');
+                setPinError('');
+                setPinModalVisible(true);
+              }}
+              className="p-2 opacity-70"
+            >
+              <Icon name="lock-outline" size={36} color="#475569" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Passenger Feedback Label Centered at Middle Top (Shown only on main rating screen) */}
+        {step === 'rating' && (
+          <View className="items-center my-5">
+            <Text className="text-5xl md:text-6xl font-black text-slate-900 text-center tracking-tight" style={{ lineHeight: 68 }}>
+              {t('passengerFeedback')}
+            </Text>
+          </View>
+        )}
+
+        {/* Merged Active Flight & Rating Card */}
+        {step === 'rating' && (
+          <View
+            className="bg-white rounded-[36px] p-10 border border-slate-200 mb-8 min-h-[460px] justify-between"
+            style={{ elevation: 5 }}
+          >
+            {/* Header: Active Flight Details */}
+            <View className="flex-row justify-between items-center pb-6 mb-4 border-b border-slate-100">
+              <View>
+                <Text className="text-xs font-black text-teal-700 uppercase tracking-wider mb-1">
+                  {t('activeFlight')}
+                </Text>
+                <Text className="text-4xl font-black text-slate-900" style={{ lineHeight: 44 }}>
+                  {flightNo}
+                </Text>
+              </View>
+              <View className="bg-teal-50 px-5 py-2.5 rounded-2xl border border-teal-100">
+                <Text className="text-xl font-black text-teal-800">
+                  {route}
+                </Text>
               </View>
             </View>
-          </AppCard>
+
+            {/* Big Animated Rating Icons Row */}
+            <View className="flex-row justify-around items-center py-8">
+              {ratings.map((item, index) => (
+                <FloatingEmoji
+                  key={item.level}
+                  emoji={item.emoji}
+                  onPress={() => handleSelectRating(item.level)}
+                  delay={index * 220}
+                />
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Step: Reasons Selection (When rating is 1) */}
+        {step === 'reasons' && (
+          <View
+            onTouchStart={resetReasonsTimer}
+            className="bg-white rounded-[36px] p-10 border border-slate-200 mb-8 min-h-[480px] justify-between"
+            style={{ elevation: 5 }}
+          >
+            <View>
+              <View className="mb-6">
+                <Text className="text-4xl font-black text-slate-900" style={{ lineHeight: 48 }}>
+                  {t('whatToImprove')}
+                </Text>
+              </View>
+
+              {/* Columns of 3 reasons each */}
+              <View className="flex-row flex-wrap gap-5">
+                {(() => {
+                  const cols: UnsatisfiedReason[][] = [];
+                  for (let i = 0; i < apiReasons.length; i += 3) {
+                    cols.push(apiReasons.slice(i, i + 3));
+                  }
+                  return cols.map((col, colIdx) => (
+                    <View key={colIdx} className="flex-1 min-w-[240px] gap-4">
+                      {col.map((reason) => (
+                        <View key={reason.id} className="w-full">
+                          <ReasonChip
+                            label={reason.reasonName}
+                            selected={selectedReasons.includes(reason.id)}
+                            onPress={() => toggleReason(reason.id)}
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  ));
+                })()}
+              </View>
+            </View>
+
+            <View className="mt-8 flex-row gap-5">
+              <View className="flex-1">
+                <AppButton title={t('back')} onPress={() => setStep('rating')} variant="secondary" />
+              </View>
+              <View className="flex-1">
+                <AppButton title={t('submitFeedback')} onPress={() => handleSubmit()} />
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Step: Thank You */}
+        {step === 'thankyou' && (
+          <View
+            className="bg-white rounded-[36px] p-12 border border-slate-200 mb-8 min-h-[480px] items-center justify-center"
+            style={{ elevation: 5 }}
+          >
+            <Text className="text-center mb-3" style={{ fontSize: 104, lineHeight: 120 }}>🎉</Text>
+            <Text className="text-5xl font-black text-slate-900 text-center" style={{ lineHeight: 60 }}>
+              {t('thankYou')}
+            </Text>
+            <Text className="text-xl font-bold text-slate-600 text-center mt-4 max-w-[620px]" style={{ lineHeight: 32 }}>
+              {t('thankYouMessage')}
+            </Text>
+
+            <View className="mt-10 w-full max-w-[400px]">
+              <AppButton title={t('submitAnother')} onPress={resetForm} />
+            </View>
+          </View>
         )}
       </ScrollView>
 
@@ -302,15 +397,15 @@ export default function KioskScreen() {
       <Modal visible={pinModalVisible} transparent animationType="fade">
         <View className="flex-1 justify-center items-center p-6" style={{ backgroundColor: 'rgba(15,23,42,0.6)' }}>
           <View className="bg-white rounded-3xl p-8 w-full max-w-[460px] border border-slate-200" style={{ elevation: 10 }}>
-            <Text className="text-2xl font-bold text-slate-900">Admin Authentication</Text>
-            <Text className="text-base text-slate-500 mt-1 mb-6">Enter Admin PIN/Password to access settings.</Text>
+            <Text className="text-2xl font-bold text-slate-900">{t('adminAuth')}</Text>
+            <Text className="text-base text-slate-500 mt-1 mb-6">{t('enterPinDescription')}</Text>
 
             <TextInput
               secureTextEntry
               keyboardType="number-pad"
               value={pinInput}
               onChangeText={setPinInput}
-              placeholder="Enter PIN"
+              placeholder={t('enterPinPlaceholder')}
               textAlign="center"
               textAlignVertical="center"
               className="border border-slate-300 rounded-2xl p-5 bg-slate-50 text-slate-900 mb-2 text-2xl font-bold"
@@ -320,10 +415,10 @@ export default function KioskScreen() {
 
             <View className="flex-row gap-4 mt-3">
               <View className="flex-1">
-                <AppButton title="Cancel" onPress={() => setPinModalVisible(false)} variant="secondary" />
+                <AppButton title={t('cancel')} onPress={() => setPinModalVisible(false)} variant="secondary" />
               </View>
               <View className="flex-1">
-                <AppButton title="Unlock" onPress={handleAdminPinSubmit} />
+                <AppButton title={t('unlock')} onPress={handleAdminPinSubmit} />
               </View>
             </View>
           </View>

@@ -1,6 +1,7 @@
 import { AppButton, AppCard, Icon, PageHeader, SectionTitle, StatusBadge } from '@/components/ui';
 import { AdminDrawer } from '@/components/AdminDrawer';
 import { useSession } from '@/features/session/SessionContext';
+import i18n from '@/i18n';
 import { ApiFlight, flightApi } from '@/services/api/flightApi';
 import { theme } from '@/theme';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from '@/tw';
@@ -13,6 +14,7 @@ export default function SelectFlightScreen() {
   const { session, setupSession, isAdminUnlocked, isLoaded, lockAdmin, touchUserActivity } = useSession();
   const { width, height } = useWindowDimensions();
   const isTablet = width / height >= 1.45;
+  const t = i18n.t.bind(i18n);
 
   const [flights, setFlights] = useState<ApiFlight[]>([]);
   const [selectedFlight, setSelectedFlight] = useState<ApiFlight | null>(null);
@@ -79,7 +81,7 @@ export default function SelectFlightScreen() {
 
   const handleConfirmFlight = async () => {
     if (!selectedFlight) {
-      setErrorMsg('⚠️ Please select a flight from the list before confirming.');
+      setErrorMsg(t('pleaseSelectFlight'));
       return;
     }
     setErrorMsg('');
@@ -103,7 +105,7 @@ export default function SelectFlightScreen() {
       router.replace('/kiosk' as never);
     } else {
       // If already unlocked in Admin Mode, update flight and remain in Admin Mode
-      setErrorMsg('Flight updated successfully!');
+      setErrorMsg(t('flightUpdatedSuccess'));
       setTimeout(() => {
         setErrorMsg('');
       }, 2500);
@@ -116,6 +118,9 @@ export default function SelectFlightScreen() {
     setConfirmModalVisible(true);
   };
 
+  // Helper to check if errorMsg is a success message (works for both en/vi)
+  const isSuccessMsg = errorMsg === t('flightUpdatedSuccess');
+
   return (
     <View className="flex-1 bg-slate-100" onTouchStart={touchUserActivity}>
       <ScrollView
@@ -125,11 +130,11 @@ export default function SelectFlightScreen() {
       >
         {/* Header with Admin Menu button */}
         <PageHeader
-          title="Session Setup"
-          subtitle="Choose flight and counter. App will switch to passenger Kiosk Mode upon confirmation."
+          title={t('sessionSetup')}
+          subtitle={t('sessionSetupSubtitle')}
           rightAction={
             <AppButton
-              title="Admin Menu"
+              title={t('adminMenu')}
               icon="menu"
               onPress={() => setDrawerVisible(true)}
               variant="secondary"
@@ -139,12 +144,12 @@ export default function SelectFlightScreen() {
         />
 
         {/* 1. Counter Input */}
-        <SectionTitle title="1. Check-in Counter / Location" subtitle="Type counter name or number (e.g. Counter A, Desk 12)..." />
+        <SectionTitle title={t('counterLocation')} subtitle={t('counterLocationSubtitle')} />
         <View className="mb-6">
           <TextInput
             value={selectedCounter}
             onChangeText={setSelectedCounter}
-            placeholder="Type counter (e.g. Counter A, Gate 3)"
+            placeholder={t('counterPlaceholder')}
             className="border border-slate-300 rounded-2xl p-4 bg-white text-slate-900 text-lg font-bold shadow-sm"
           />
         </View>
@@ -152,19 +157,19 @@ export default function SelectFlightScreen() {
         {errorMsg ? (
           <View
             className={`p-4 rounded-2xl mb-4 border flex-row items-center justify-center gap-2.5 ${
-              errorMsg.includes('successfully')
+              isSuccessMsg
                 ? 'bg-teal-50 border-teal-200'
                 : 'bg-red-50 border-red-200'
             }`}
           >
             <Icon
-              name={errorMsg.includes('successfully') ? 'check' : 'lock'}
+              name={isSuccessMsg ? 'check' : 'lock'}
               size={22}
-              color={errorMsg.includes('successfully') ? '#0f766e' : '#dc2626'}
+              color={isSuccessMsg ? '#0f766e' : '#dc2626'}
             />
             <Text
               className={`font-bold text-center text-base ${
-                errorMsg.includes('successfully') ? 'text-teal-800' : 'text-red-700'
+                isSuccessMsg ? 'text-teal-800' : 'text-red-700'
               }`}
             >
               {errorMsg}
@@ -173,7 +178,7 @@ export default function SelectFlightScreen() {
         ) : null}
 
         {/* 2. Select Flight */}
-        <SectionTitle title="2. Select Active Flight" subtitle="Search or tap a flight below to activate..." />
+        <SectionTitle title={t('selectActiveFlight')} subtitle={t('selectActiveFlightSubtitle')} />
         
         {/* Live Filter Search Input */}
         <View className="mb-4 flex-row items-center bg-white border border-slate-300 rounded-2xl px-4 py-3" style={{ elevation: 1 }}>
@@ -183,7 +188,7 @@ export default function SelectFlightScreen() {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Filter by flight number or route (e.g. VN210, HAN)..."
+            placeholder={t('filterPlaceholder')}
             className="flex-1 text-slate-900 text-base font-semibold"
           />
           {searchQuery ? (
@@ -198,7 +203,7 @@ export default function SelectFlightScreen() {
         ) : filteredFlights.length === 0 ? (
           <AppCard className="py-8 items-center justify-center">
             <Text className="text-slate-500 font-semibold text-base">
-              {searchQuery ? `No flights found matching "${searchQuery}"` : 'No upcoming flights scheduled.'}
+              {searchQuery ? `${t('noFlightsMatch')} "${searchQuery}"` : t('noUpcomingFlights')}
             </Text>
           </AppCard>
         ) : (
@@ -231,7 +236,7 @@ export default function SelectFlightScreen() {
                   <View className="flex-row items-center gap-2">
                     <Icon name="clock" size={20} color="#0f766e" />
                     <Text className="text-lg font-bold text-slate-800">
-                      Departs: <Text className="font-black text-teal-900">{timeStr}</Text> ({flight.flightDate})
+                      {t('departs')} <Text className="font-black text-teal-900">{timeStr}</Text> ({flight.flightDate})
                     </Text>
                   </View>
                   {flight.acno ? (
@@ -245,7 +250,7 @@ export default function SelectFlightScreen() {
                 {/* Select Button */}
                 <View className="mt-3">
                   <AppButton
-                    title={isSelected ? 'Selected Flight' : 'Select Flight'}
+                    title={isSelected ? t('selectedFlight') : t('selectFlight')}
                     icon={isSelected ? 'check' : undefined}
                     onPress={() => openConfirmationPopup(flight)}
                     variant={isSelected ? 'primary' : 'secondary'}
@@ -261,24 +266,24 @@ export default function SelectFlightScreen() {
       <Modal visible={confirmModalVisible} transparent animationType="fade" onRequestClose={() => setConfirmModalVisible(false)}>
         <View className="flex-1 justify-center items-center p-6" style={{ backgroundColor: 'rgba(15,23,42,0.6)' }} onTouchStart={touchUserActivity}>
           <View className="bg-white rounded-3xl p-8 w-full max-w-[480px] border border-slate-200" style={{ elevation: 10 }}>
-            <Text className="text-2xl font-black text-slate-900 mb-1">Confirm Flight Session</Text>
+            <Text className="text-2xl font-black text-slate-900 mb-1">{t('confirmFlightSession')}</Text>
             <Text className="text-base font-semibold text-slate-500 mb-6">
-              Review details before activating session.
+              {t('reviewDetails')}
             </Text>
 
             {selectedFlight && (
               <View className="bg-teal-50 border border-teal-200 rounded-2xl p-5 mb-6">
-                <Text className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-3">Session Summary</Text>
+                <Text className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-3">{t('sessionSummary')}</Text>
                 
                 <View className="mb-3">
-                  <Text className="text-sm font-semibold text-slate-500">Flight & Route</Text>
+                  <Text className="text-sm font-semibold text-slate-500">{t('flightRoute')}</Text>
                   <Text className="text-xl font-black text-slate-900 mt-0.5">
                     {selectedFlight.flightNo} ({selectedFlight.route})
                   </Text>
                 </View>
 
                 <View className="mb-3">
-                  <Text className="text-sm font-semibold text-slate-500">Check-in Counter / Location</Text>
+                  <Text className="text-sm font-semibold text-slate-500">{t('counterLocationLabel')}</Text>
                   <Text className="text-lg font-bold text-teal-800 mt-0.5">
                     {selectedCounter || 'Counter A'}
                   </Text>
@@ -286,7 +291,7 @@ export default function SelectFlightScreen() {
 
                 {selectedFlight.flightDateTime ? (
                   <View>
-                    <Text className="text-sm font-semibold text-slate-500">Scheduled Departure</Text>
+                    <Text className="text-sm font-semibold text-slate-500">{t('scheduledDeparture')}</Text>
                     <Text className="text-base font-bold text-slate-800 mt-0.5">
                       {selectedFlight.flightDateTime?.split('T')[1]?.substring(0, 5)} ({selectedFlight.flightDate})
                     </Text>
@@ -297,10 +302,10 @@ export default function SelectFlightScreen() {
 
             <View className="flex-row gap-4 mt-2">
               <View className="flex-1">
-                <AppButton title="Cancel" onPress={() => setConfirmModalVisible(false)} variant="secondary" />
+                <AppButton title={t('cancel')} onPress={() => setConfirmModalVisible(false)} variant="secondary" />
               </View>
               <View className="flex-1">
-                <AppButton title="Confirm Flight" onPress={handleConfirmFlight} />
+                <AppButton title={t('confirmFlight')} onPress={handleConfirmFlight} />
               </View>
             </View>
           </View>
