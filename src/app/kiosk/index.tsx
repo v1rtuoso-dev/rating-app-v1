@@ -1,4 +1,4 @@
-import { AppButton, AppCard, Icon, ReasonChip } from '@/components/ui';
+import { AppButton, Icon, ReasonChip } from '@/components/ui';
 import { useSession } from '@/features/session/SessionContext';
 import { useLocale } from '@/i18n';
 import { CreateEvaluationPayload, evaluationsApi } from '@/services/api/evaluationsApi';
@@ -66,12 +66,12 @@ function FloatingEmoji({
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      className="items-center justify-center flex-1 py-4"
+      className="items-center justify-center flex-1 py-2"
     >
       <Animated.Text
         style={{
-          fontSize: 155,
-          lineHeight: 175,
+          fontSize: 195,
+          lineHeight: 215,
           textAlign: 'center',
           transform: [{ translateY }, { scale }],
         }}
@@ -230,33 +230,44 @@ export default function KioskScreen() {
 
   const flightNo = (session?.flightNo || activeFlight?.flightNo || 'WE272').trim();
   const route = (session?.route || activeFlight?.route || 'SGN → BKK').trim();
+  const counter = (session?.counter || 'Counter A').trim();
+  const flightDate = (activeFlight?.flightDate || new Date().toISOString().split('T')[0]).trim();
 
   return (
-    <View className="flex-1 bg-slate-100">
+    <View className="flex-1 bg-white">
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        className="flex-1 bg-slate-100"
-        contentContainerClassName={`flex-grow pt-6 pb-28 w-full self-center justify-center ${
+        className="flex-1 bg-white"
+        contentContainerClassName={`flex-grow pt-4 pb-20 w-full self-center justify-between ${
           isLandscape ? 'px-10 max-w-[1280px]' : 'px-6'
         }`}
       >
-        {/* Top Header with HGS Logo (Left Aligned), Language Toggle & Lock Icon */}
-        <View className="flex-row justify-between items-center mb-2">
-          <View className="-ml-4">
+        {/* Top Header with HGS Logo (Left), Centered Passenger Feedback Title (Center), Language Toggle & Lock Icon (Right) */}
+        <View className="flex-row items-center justify-between pb-5 border-b border-slate-100 mb-6">
+          {/* Left: HGS Ground Handling Logo */}
+          <View className="w-[220px] justify-center">
             <Image
               source={require('@/assets/images/hgs-logo.png')}
-              style={{ width: 220, height: 75, marginLeft: -4 }}
+              style={{ width: 190, height: 64 }}
               resizeMode="contain"
             />
           </View>
 
-          <View className="flex-row items-center gap-3">
-            {/* Language Toggle Button */}
+          {/* Center: Passenger Feedback Title */}
+          <View className="flex-1 items-center justify-center px-2">
+            {step === 'rating' && (
+              <Text className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight text-center">
+                {t('passengerFeedback')}
+              </Text>
+            )}
+          </View>
+
+          {/* Right: Language Toggle & Lock Controls */}
+          <View className="w-[220px] flex-row items-center justify-end gap-3">
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={toggleLocale}
-              className="px-3.5 py-2 rounded-xl bg-white border border-slate-200"
-              style={{ elevation: 2 }}
+              className="px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200"
             >
               <Text className="text-base font-bold text-slate-700">
                 {locale === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}
@@ -272,45 +283,67 @@ export default function KioskScreen() {
               }}
               className="p-2 opacity-70"
             >
-              <Icon name="lock-outline" size={36} color="#475569" />
+              <Icon name="lock-outline" size={32} color="#475569" />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Passenger Feedback Label Centered at Middle Top (Shown only on main rating screen) */}
-        {step === 'rating' && (
-          <View className="items-center my-5">
-            <Text className="text-5xl md:text-6xl font-black text-slate-900 text-center tracking-tight" style={{ lineHeight: 68 }}>
-              {t('passengerFeedback')}
-            </Text>
-          </View>
-        )}
+        {/* LOWER SECTION: Rating / Reasons / Thank You */}
 
-        {/* Merged Active Flight & Rating Card */}
+        {/* Step: Main Rating Screen */}
         {step === 'rating' && (
-          <View
-            className="bg-white rounded-[36px] p-10 border border-slate-200 mb-8 min-h-[460px] justify-between"
-            style={{ elevation: 5 }}
-          >
-            {/* Header: Active Flight Details */}
-            <View className="flex-row justify-between items-center pb-6 mb-4 border-b border-slate-100">
-              <View>
-                <Text className="text-xs font-black text-teal-700 uppercase tracking-wider mb-1">
-                  {t('activeFlight')}
-                </Text>
-                <Text className="text-4xl font-black text-slate-900" style={{ lineHeight: 44 }}>
-                  {flightNo}
-                </Text>
+          <View className="flex-1 justify-center py-4">
+            {/* Above Row: 4-Column Grid directly matching the 4 Emoji Icon columns below */}
+            <View className="flex-row items-end mb-8">
+              {/* Column 1 (Directly above 1st Emoji 😍): Extra Large Borderless Airline Logo Placeholder */}
+              <View className="flex-1 items-center justify-center">
+                <View className="items-center justify-center">
+                  <Icon name="flight" size={84} color="#0f766e" />
+                  <Text className="text-sm font-black text-slate-400 uppercase tracking-widest mt-2">AIRLINE</Text>
+                  <Text className="text-2xl font-black text-slate-900 text-center tracking-tight">LOGO</Text>
+                </View>
               </View>
-              <View className="bg-teal-50 px-5 py-2.5 rounded-2xl border border-teal-100">
-                <Text className="text-xl font-black text-teal-800">
-                  {route}
-                </Text>
+
+              {/* Column 2: Blank spacing above 2nd Emoji 😊 */}
+              <View className="flex-1" />
+
+              {/* Column 3: Blank spacing above 3rd Emoji 😐 */}
+              <View className="flex-1" />
+
+              {/* Column 4 (Directly above 4th Emoji 😞): Extra Large Borderless Active Flight & Counter Info */}
+              <View className="flex-1 items-center justify-center">
+                <View className="items-center w-full gap-2">
+                  {/* Active Flight Header & Number */}
+                  <View className="items-center">
+                    <Text className="text-sm font-black text-teal-700 uppercase tracking-wider mb-1">{t('activeFlight')}</Text>
+                    <Text className="text-4xl md:text-5xl font-black text-slate-900 text-center" style={{ lineHeight: 52 }}>
+                      {flightNo}
+                    </Text>
+                    <Text className="text-xl font-black text-teal-800 text-center mt-1">
+                      {route}
+                    </Text>
+                  </View>
+
+                  {/* Counter & Date Sub-Details */}
+                  <View className="flex-row items-center justify-center gap-8 mt-2">
+                    <View className="items-center">
+                      <Text className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('checkInLocation')}</Text>
+                      <Text className="text-xl font-black text-slate-900">{counter}</Text>
+                    </View>
+
+                    <View className="h-10 w-[2px] bg-slate-200" />
+
+                    <View className="items-center">
+                      <Text className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('departure')}</Text>
+                      <Text className="text-xl font-black text-slate-900">{flightDate}</Text>
+                    </View>
+                  </View>
+                </View>
               </View>
             </View>
 
-            {/* Big Animated Rating Icons Row */}
-            <View className="flex-row justify-around items-center py-8">
+            {/* Rating Emoji Icons Row (4 Columns matching Above Row) */}
+            <View className="flex-row items-center">
               {ratings.map((item, index) => (
                 <FloatingEmoji
                   key={item.level}
@@ -325,11 +358,7 @@ export default function KioskScreen() {
 
         {/* Step: Reasons Selection (When rating is 1) */}
         {step === 'reasons' && (
-          <View
-            onTouchStart={resetReasonsTimer}
-            className="bg-white rounded-[36px] p-10 border border-slate-200 mb-8 min-h-[480px] justify-between"
-            style={{ elevation: 5 }}
-          >
+          <View onTouchStart={resetReasonsTimer} className="flex-1 justify-center py-4">
             <View>
               <View className="mb-6">
                 <Text className="text-4xl font-black text-slate-900" style={{ lineHeight: 48 }}>
@@ -338,14 +367,14 @@ export default function KioskScreen() {
               </View>
 
               {/* Columns of 3 reasons each */}
-              <View className="flex-row flex-wrap gap-5">
+              <View className="flex-row flex-wrap gap-5 mb-8">
                 {(() => {
                   const cols: UnsatisfiedReason[][] = [];
                   for (let i = 0; i < apiReasons.length; i += 3) {
                     cols.push(apiReasons.slice(i, i + 3));
                   }
                   return cols.map((col, colIdx) => (
-                    <View key={colIdx} className="flex-1 min-w-[240px] gap-4">
+                    <View key={colIdx} className="flex-1 min-w-[280px] gap-4">
                       {col.map((reason) => (
                         <View key={reason.id} className="w-full">
                           <ReasonChip
@@ -359,14 +388,15 @@ export default function KioskScreen() {
                   ));
                 })()}
               </View>
-            </View>
 
-            <View className="mt-8 flex-row gap-5">
-              <View className="flex-1">
-                <AppButton title={t('back')} onPress={() => setStep('rating')} variant="secondary" />
-              </View>
-              <View className="flex-1">
-                <AppButton title={t('submitFeedback')} onPress={() => handleSubmit()} />
+              {/* Action Buttons spanning full width right below reason chips */}
+              <View className="flex-row gap-5 w-full mt-2">
+                <View className="flex-1">
+                  <AppButton title={t('back')} onPress={() => setStep('rating')} variant="secondary" />
+                </View>
+                <View className="flex-1">
+                  <AppButton title={t('submitFeedback')} onPress={() => handleSubmit()} />
+                </View>
               </View>
             </View>
           </View>
@@ -374,10 +404,7 @@ export default function KioskScreen() {
 
         {/* Step: Thank You */}
         {step === 'thankyou' && (
-          <View
-            className="bg-white rounded-[36px] p-12 border border-slate-200 mb-8 min-h-[480px] items-center justify-center"
-            style={{ elevation: 5 }}
-          >
+          <View className="flex-1 items-center justify-center py-10">
             <Text className="text-center mb-3" style={{ fontSize: 104, lineHeight: 120 }}>🎉</Text>
             <Text className="text-5xl font-black text-slate-900 text-center" style={{ lineHeight: 60 }}>
               {t('thankYou')}
