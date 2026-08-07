@@ -156,20 +156,20 @@ export default function SelectFlightScreen() {
 
         {errorMsg ? (
           <View
-            className={`p-4 rounded-2xl mb-4 border flex-row items-center justify-center gap-2.5 ${
+            className={`p-4 rounded-2xl mb-6 border flex-row items-center justify-center gap-3 ${
               isSuccessMsg
-                ? 'bg-teal-50 border-teal-200'
+                ? 'bg-blue-50 border-blue-200'
                 : 'bg-red-50 border-red-200'
             }`}
           >
             <Icon
               name={isSuccessMsg ? 'check' : 'lock'}
               size={22}
-              color={isSuccessMsg ? '#0f766e' : '#dc2626'}
+              color={isSuccessMsg ? '#17479E' : '#dc2626'}
             />
             <Text
               className={`font-bold text-center text-base ${
-                isSuccessMsg ? 'text-teal-800' : 'text-red-700'
+                isSuccessMsg ? 'text-[#17479E]' : 'text-red-700'
               }`}
             >
               {errorMsg}
@@ -215,13 +215,13 @@ export default function SelectFlightScreen() {
               <AppCard
                 key={flight.id}
                 className={`mb-4 border-2 ${
-                  isSelected ? 'border-teal-600 bg-teal-50/20' : 'border-transparent'
+                  isSelected ? 'border-[#17479E] bg-blue-50/20' : 'border-transparent'
                 }`}
               >
                 <View className="flex-row justify-between items-center">
                   <View className="flex-1 pr-2">
                     <Text className="text-2xl font-extrabold text-slate-900">{flight.flightNo}</Text>
-                    <Text className="text-base font-bold text-teal-800 mt-0.5">{flight.route}</Text>
+                    <Text className="text-base font-bold text-[#17479E] mt-0.5">{flight.route}</Text>
                   </View>
 
                   {/* Status Badge */}
@@ -234,9 +234,9 @@ export default function SelectFlightScreen() {
                 {/* Departure Time & Date Info */}
                 <View className="bg-slate-100/80 rounded-2xl p-4 my-2 flex-row flex-wrap justify-between items-center gap-2">
                   <View className="flex-row items-center gap-2">
-                    <Icon name="clock" size={20} color="#0f766e" />
+                    <Icon name="clock" size={20} color="#17479E" />
                     <Text className="text-lg font-bold text-slate-800">
-                      {t('departs')} <Text className="font-black text-teal-900">{timeStr}</Text> ({flight.flightDate})
+                      {t('departs')} <Text className="font-black text-[#17479E]">{timeStr}</Text> ({flight.flightDate})
                     </Text>
                   </View>
                   {flight.acno ? (
@@ -272,8 +272,8 @@ export default function SelectFlightScreen() {
             </Text>
 
             {selectedFlight && (
-              <View className="bg-teal-50 border border-teal-200 rounded-2xl p-5 mb-6">
-                <Text className="text-xs font-bold text-teal-600 uppercase tracking-wider mb-3">{t('sessionSummary')}</Text>
+              <View className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-6">
+                <Text className="text-xs font-bold text-[#17479E] uppercase tracking-wider mb-3">{t('sessionSummary')}</Text>
                 
                 <View className="mb-3">
                   <Text className="text-sm font-semibold text-slate-500">{t('flightRoute')}</Text>
@@ -283,8 +283,8 @@ export default function SelectFlightScreen() {
                 </View>
 
                 <View className="mb-3">
-                  <Text className="text-sm font-semibold text-slate-500">{t('counterLocationLabel')}</Text>
-                  <Text className="text-lg font-bold text-teal-800 mt-0.5">
+                  <Text className="text-sm font-semibold text-slate-500">{t('checkInCounter')}</Text>
+                  <Text className="text-lg font-bold text-[#17479E] mt-0.5">
                     {selectedCounter || 'Counter A'}
                   </Text>
                 </View>

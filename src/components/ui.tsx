@@ -15,8 +15,8 @@ export function AppButton({ title, onPress, variant = 'primary', fullWidth = tru
   const isPrimary = variant === 'primary';
   const isSecondary = variant === 'secondary';
 
-  const bgColor = isPrimary ? '#0f766e' : isSecondary ? '#e2e8f0' : '#ffffff';
-  const borderColor = isPrimary ? '#0f766e' : '#cbd5e1';
+  const bgColor = isPrimary ? '#17479E' : isSecondary ? '#e2e8f0' : '#ffffff';
+  const borderColor = isPrimary ? '#17479E' : '#cbd5e1';
   const textColor = isPrimary ? '#ffffff' : '#1e293b';
 
   return (
@@ -120,7 +120,7 @@ export function StatusBadge({ label, color }: { label: string; color?: string })
   return (
     <View
       className="py-1.5 px-3.5 rounded-full self-start"
-      style={{ backgroundColor: color || '#0f766e' }}
+      style={{ backgroundColor: color || '#17479E' }}
     >
       <Text selectable className="text-white text-sm font-bold">{label}</Text>
     </View>
@@ -138,7 +138,7 @@ export function RatingOption({ label, emoji, selected, onPress }: { label: strin
       <Text
         selectable
         className="text-lg text-center"
-        style={{ color: selected ? '#0f766e' : '#1e293b', fontWeight: selected ? '800' : '700' }}
+        style={{ color: selected ? '#17479E' : '#1e293b', fontWeight: selected ? '800' : '700' }}
       >
         {label}
       </Text>
@@ -153,9 +153,9 @@ export function ReasonChip({ label, selected, onPress }: { label: string; select
       onPress={onPress}
       className="flex-row items-center rounded-2xl py-4 px-6 mb-1"
       style={{
-        backgroundColor: selected ? '#0f766e' : '#f8fafc',
+        backgroundColor: selected ? '#17479E' : '#f8fafc',
         borderWidth: 2,
-        borderColor: selected ? '#0f766e' : '#cbd5e1',
+        borderColor: selected ? '#17479E' : '#cbd5e1',
         elevation: selected ? 2 : 1,
       }}
     >
@@ -168,7 +168,7 @@ export function ReasonChip({ label, selected, onPress }: { label: string; select
         }}
       >
         {selected ? (
-          <Icon name="check" size={18} color="#0f766e" />
+          <Icon name="check" size={18} color="#17479E" />
         ) : null}
       </View>
       <Text

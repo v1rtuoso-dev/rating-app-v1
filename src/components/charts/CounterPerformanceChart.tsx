@@ -51,8 +51,8 @@ export function CounterPerformanceChart({ evaluations }: CounterPerformanceChart
         subtitle={t('counterPerformanceSubtitle')}
         rightElement={
           topCounter ? (
-            <View className="bg-teal-50 px-3.5 py-1.5 rounded-full border border-teal-200">
-              <Text className="text-xs font-bold text-teal-800">{t('busiestCounter')}: {topCounter.counterName}</Text>
+            <View className="bg-blue-50 px-3.5 py-1.5 rounded-full border border-blue-200">
+              <Text className="text-xs font-bold text-[#17479E]">{t('busiestCounter')}: {topCounter.counterName}</Text>
             </View>
           ) : null
         }

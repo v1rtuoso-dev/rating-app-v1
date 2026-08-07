@@ -12,7 +12,7 @@ export default function AdminLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#0f766e',
+        tabBarActiveTintColor: '#17479E',
         tabBarInactiveTintColor: '#64748b',
         tabBarStyle: isAdminUnlocked
           ? {

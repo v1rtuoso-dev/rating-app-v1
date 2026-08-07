@@ -222,9 +222,9 @@ export default function AdminDashboardScreen() {
                     onPress={() => setTimeFilter(item.id as TimeFilter)}
                     className="py-2.5 px-5 rounded-xl"
                     style={{
-                      backgroundColor: isActive ? '#0f766e' : '#f8fafc',
+                      backgroundColor: isActive ? '#17479E' : '#f8fafc',
                       borderWidth: 1,
-                      borderColor: isActive ? '#0f766e' : '#cbd5e1',
+                      borderColor: isActive ? '#17479E' : '#cbd5e1',
                     }}
                   >
                     <Text className="text-sm font-bold" style={{ color: isActive ? '#ffffff' : '#334155' }}>
@@ -254,9 +254,9 @@ export default function AdminDashboardScreen() {
                     onPress={() => setRatingFilter(item.id as RatingFilter)}
                     className="py-2.5 px-4 rounded-xl"
                     style={{
-                      backgroundColor: isActive ? '#0f766e' : '#f8fafc',
+                      backgroundColor: isActive ? '#17479E' : '#f8fafc',
                       borderWidth: 1,
-                      borderColor: isActive ? '#0f766e' : '#cbd5e1',
+                      borderColor: isActive ? '#17479E' : '#cbd5e1',
                     }}
                   >
                     <Text className="text-sm font-bold" style={{ color: isActive ? '#ffffff' : '#334155' }}>
@@ -304,7 +304,7 @@ export default function AdminDashboardScreen() {
               >
                 <Text
                   className="text-base font-bold text-center"
-                  style={{ color: isActive ? '#0f766e' : '#475569', fontWeight: isActive ? '800' : '600' }}
+                  style={{ color: isActive ? '#17479E' : '#475569', fontWeight: isActive ? '800' : '600' }}
                 >
                   {tab.label}
                 </Text>

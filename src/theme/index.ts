@@ -4,8 +4,8 @@ import { typography } from './typography';
 export const theme = {
   typography,
   colors: {
-    primary: '#0f766e',
-    primaryDark: '#115e59',
+    primary: '#17479E',
+    primaryDark: '#0f3475',
     accent: '#2563eb',
     warning: '#f59e0b',
     success: '#16a34a',

@@ -73,8 +73,8 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
               {/* Header */}
               <View className="flex-row justify-between items-center pb-4 border-b border-slate-200 mb-6">
                 <View className="flex-row items-center gap-3">
-                  <View className="p-2.5 bg-teal-50 rounded-2xl border border-teal-100">
-                    <Icon name="devices" size={24} color="#0f766e" />
+                  <View className="p-2.5 bg-blue-50 rounded-2xl border border-blue-100">
+                    <Icon name="devices" size={24} color="#17479E" />
                   </View>
                   <View>
                     <Text className="text-xl font-bold text-slate-900">{t('adminOptions')}</Text>
@@ -107,7 +107,7 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
                   onPress={handleLockKiosk}
                   className="flex-row items-center p-4 bg-slate-100 rounded-2xl border border-slate-200"
                 >
-                  <Icon name="lock" size={22} color="#0f766e" />
+                  <Icon name="lock" size={22} color="#17479E" />
                   <View className="ml-3">
                     <Text className="text-base font-bold text-slate-900">{t('lockKioskMode')}</Text>
                     <Text className="text-xs text-slate-500">{t('lockKioskDescription')}</Text>
@@ -119,13 +119,13 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
                   onPress={toggleLocale}
                   className="flex-row items-center p-4 bg-slate-100 rounded-2xl border border-slate-200"
                 >
-                  <Icon name="translate" size={22} color="#0f766e" />
+                  <Icon name="translate" size={22} color="#17479E" />
                   <View className="ml-3 flex-1 flex-row justify-between items-center pr-2">
                     <View>
                       <Text className="text-base font-bold text-slate-900">{t('languageLabel')}</Text>
                       <Text className="text-xs text-slate-500">Switch app display language</Text>
                     </View>
-                    <Text className="text-base font-black text-teal-800">
+                    <Text className="text-base font-black text-[#17479E]">
                       {locale === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}
                     </Text>
                   </View>
@@ -140,7 +140,7 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
                   }}
                   className="flex-row items-center p-4 bg-slate-100 rounded-2xl border border-slate-200"
                 >
-                  <Icon name="key" size={22} color="#0f766e" />
+                  <Icon name="key" size={22} color="#17479E" />
                   <View className="ml-3">
                     <Text className="text-base font-bold text-slate-900">{t('changeAdminPin')}</Text>
                     <Text className="text-xs text-slate-500">{t('changeAdminPinDescription')}</Text>
@@ -190,11 +190,11 @@ export function AdminDrawer({ visible, onClose }: AdminDrawerProps) {
             {pinChangeMessage ? (
               <View className="flex-row items-center justify-center gap-2 mb-4">
                 {isPinSuccess ? (
-                  <Icon name="check" size={18} color="#0f766e" />
+                  <Icon name="check" size={18} color="#17479E" />
                 ) : null}
                 <Text
                   className={`text-sm font-bold ${
-                    isPinSuccess ? 'text-teal-700' : 'text-red-600'
+                    isPinSuccess ? 'text-[#17479E]' : 'text-red-600'
                   }`}
                 >
                   {pinChangeMessage}
