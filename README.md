@@ -161,6 +161,79 @@ Or run directly on your target platform:
 
 ---
 
+## 📦 Development Build & Generating APK
+
+Because this project uses native custom fonts and modules with [`expo-dev-client`](https://docs.expo.dev/develop/development-builds/introduction/), standalone development and production builds are compiled directly via Android/Gradle or EAS Build.
+
+### 1. Running the Native Development Build
+To compile the native app and install the custom development client directly onto your connected tablet or emulator:
+
+```bash
+# Using Bun
+bun run android
+
+# Using npm
+npm run android
+# or
+npx expo run:android
+```
+
+Once installed on the device, simply run `bun start` or `npm start` to connect the bundler and stream code changes in real-time.
+
+---
+
+### 2. Building Standalone APK Locally (Offline)
+
+You can build APK files directly using the local Gradle wrapper without requiring internet cloud services:
+
+#### A. Build Debug APK (Fastest for testing)
+```bash
+# Windows (PowerShell)
+cd android; ./gradlew assembleDebug; cd ..
+
+# macOS / Linux (Bash)
+cd android && ./gradlew assembleDebug && cd ..
+```
+📁 **APK Output Location**:
+`android/app/build/outputs/apk/debug/app-debug.apk`
+
+#### B. Build Release APK (Production Kiosk)
+```bash
+# Windows (PowerShell)
+cd android; ./gradlew assembleRelease; cd ..
+
+# macOS / Linux (Bash)
+cd android && ./gradlew assembleRelease && cd ..
+```
+📁 **APK Output Location**:
+`android/app/build/outputs/apk/release/app-release.apk` (or unsigned if keystore is pending)
+
+---
+
+### 3. Installing APK to Tablet via ADB
+
+Connect your Android tablet via USB (with **USB Debugging** enabled in Developer Options) and install the APK:
+
+```bash
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+---
+
+### 4. Cloud Build via EAS (Alternative)
+
+If you prefer building in the cloud via [EAS Build](https://docs.expo.dev/build/introduction/):
+
+1. Install EAS CLI:
+   ```bash
+   npm install -g eas-cli
+   ```
+2. Log in and initiate APK preview build:
+   ```bash
+   eas build --platform android --profile preview
+   ```
+3. Once completed, EAS will provide a direct download link and QR code for the APK file.
+
 ## 🔐 Admin Access & Default Credentials
 
 To configure a tablet for a flight counter:

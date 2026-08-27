@@ -161,6 +161,81 @@ Hoặc chạy trực tiếp trên nền tảng mục tiêu:
 
 ---
 
+## 📦 Bản Build Phát Triển (Dev Build) & Xuất Tệp Cài Đặt APK
+
+Do ứng dụng sử dụng phông chữ doanh nghiệp tùy chỉnh và các mô-đun native với [`expo-dev-client`](https://docs.expo.dev/develop/development-builds/introduction/), bạn có thể chạy bản build phát triển hoặc xuất tệp `.apk` trực tiếp qua Gradle (Android) hoặc qua dịch vụ EAS Build.
+
+### 1. Khởi Chạy Native Development Build
+Để biên dịch mã nguồn native và cài đặt client phát triển trực tiếp lên máy tính bảng hoặc máy ảo Android đang kết nối:
+
+```bash
+# Bằng Bun
+bun run android
+
+# Bằng npm
+npm run android
+# hoặc
+npx expo run:android
+```
+
+Sau khi ứng dụng đã cài đặt trên thiết bị, bạn chỉ cần chạy `bun start` hoặc `npm start` để kết nối Metro bundler và cập nhật mã tức thì (hot reload).
+
+---
+
+### 2. Xuất Tệp Cài Đặt APK Trực Tiếp Trên Máy (Offline)
+
+Bạn có thể tự biên dịch tệp `.apk` trên máy cục bộ bằng Gradle Wrapper mà không cần tài khoản đám mây:
+
+#### A. Xuất bản Debug APK (Kiểm thử nhanh trên máy tính bảng)
+```bash
+# Windows (PowerShell)
+cd android; ./gradlew assembleDebug; cd ..
+
+# macOS / Linux (Bash)
+cd android && ./gradlew assembleDebug && cd ..
+```
+📁 **Vị trí tệp APK đầu ra**:
+`android/app/build/outputs/apk/debug/app-debug.apk`
+
+#### B. Xuất bản Release APK (Cài đặt vận hành chính thức)
+```bash
+# Windows (PowerShell)
+cd android; ./gradlew assembleRelease; cd ..
+
+# macOS / Linux (Bash)
+cd android && ./gradlew assembleRelease && cd ..
+```
+📁 **Vị trí tệp APK đầu ra**:
+`android/app/build/outputs/apk/release/app-release.apk` (hoặc bản unsigned nếu chưa cấu hình keystore)
+
+---
+
+### 3. Cài Đặt Tệp APK Lên Máy Tính Bảng Qua ADB
+
+Kết nối máy tính bảng Android qua cáp USB (đã bật chế độ **Gỡ lỗi USB / USB Debugging** trong Tùy chọn nhà phát triển) và chạy lệnh:
+
+```bash
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+---
+
+### 4. Biên Dịch APK Qua Đám Mây EAS (Tùy Chọn)
+
+Nếu muốn biên dịch qua dịch vụ [EAS Build](https://docs.expo.dev/build/introduction/):
+
+1. Cài đặt EAS CLI:
+   ```bash
+   npm install -g eas-cli
+   ```
+2. Đăng nhập và khởi chạy quá trình build APK:
+   ```bash
+   eas build --platform android --profile preview
+   ```
+3. Sau khi hoàn thành, hệ thống sẽ cung cấp đường link và mã QR để tải trực tiếp tệp APK về tablet.
+
+---
+
 ## 🔐 Quyền Quản Trị & Cấu Hình Quầy
 
 Quy trình thiết lập máy tính bảng tại quầy phục vụ:
