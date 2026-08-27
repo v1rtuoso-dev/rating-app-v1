@@ -1,56 +1,197 @@
-# Welcome to your Expo app 👋
+# HGS Passenger Rating Kiosk System (rating-app-v1)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**English** | [Tiếng Việt](README.vi.md)
 
-## Get started
+---
 
-1. Install dependencies
+A cross-platform tablet feedback kiosk and management application built for **Hanoi Ground Services (HGS)** at airport check-in counters and boarding gates. Powered by **Expo SDK 57**, **React Native 0.86**, **React 19**, **NativeWind (Tailwind CSS v4)**, and **Bun**.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 📱 Features & Highlights
 
-   ```bash
-   npx expo start
-   ```
+### 1. Passenger Feedback Kiosk (`/kiosk`)
+- **Intuitive Touch UI**: High-contrast, tablet-optimized layout with corporate HGS branding and typography (`SVN-PFDinTextPro`).
+- **4-Level Rating System**: Fast one-tap rating selection (Very Dissatisfied, Dissatisfied, Satisfied, Very Satisfied).
+- **Dynamic Reason Tags**: Contextual feedback categories fetched dynamically based on selected rating sentiment.
+- **Optional Detailed Feedback**: Passenger remarks/comments and contact information input.
+- **Automatic Session Reset**: Auto-submits / auto-clears back to the primary rating screen after a configurable inactivity timeout.
+- **Multilingual Support**: Instant toggle between Vietnamese (`VI`) and English (`EN`) with persistent localization.
+- **Counter & Flight Context Banner**: Displays active flight number, route, counter ID, and operating staff.
+- **Tamper-Proof Kiosk Mode**: Secure PIN-protected modal and inactivity auto-lock to prevent unauthorized tampering.
 
-In the output, you'll find options to open the app in a
+### 2. Staff & Admin Management (`/admin`)
+- **Staff Authentication**: Secure login flow with JWT token lifecycle (access + automatic refresh token rotation).
+- **Device Registration & Pairing**: Automatic hardware/tablet registration (`devicesApi`) linked to designated airport counters.
+- **Flight Assignment (`/admin/select-flight`)**: Search and assign active flights (airline, flight number, origin/destination, scheduled departure time) to the kiosk.
+- **Kiosk Status & Live Dashboard (`/admin/dashboard`)**: Monitor real-time feedback scores, submission metrics, and device heartbeat.
+- **Settings & PIN Security (`/admin/staff`)**: Manage staff session, change admin unlock PIN, and lock/unlock kiosk mode.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🛠️ Technology Stack
 
-## Get a fresh project
+| Category | Technology |
+| :--- | :--- |
+| **Framework** | [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/) (with Expo Router v4 file-based routing) |
+| **Runtime & PM** | [Bun](https://bun.sh/) |
+| **Core Libraries** | React 19, React Native 0.86, React Native Reanimated 4 |
+| **Styling** | Tailwind CSS v4 + [NativeWind v5](https://www.nativewind.dev/) + Custom HGS Design System |
+| **Typography** | Custom font family: `SVN-PFDinTextPro` (Light, Regular, Medium, Bold, CondensedBold, Italic) |
+| **Icons** | Material Icons (`@expo/vector-icons/MaterialIcons`) |
+| **Localization** | `i18n-js`, `expo-localization` (Vietnamese, English) |
+| **Storage & Security** | `expo-secure-store`, Session Context with PIN auto-lock |
+| **Network & Sync** | Axios with interceptors, token auto-refresh queue, and fallback mock services |
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
+## 📂 Project Structure
+
+```text
+rating-app-v1/
+├── assets/
+│   ├── Fonts/               # SVN-PFDinTextPro custom corporate fonts
+│   └── images/              # HGS brand banners, backgrounds, icons
+├── src/
+│   ├── app/                 # Expo Router file-based pages
+│   │   ├── _layout.tsx      # Root layout, fonts & theme provider
+│   │   ├── index.tsx        # Entry point / routing switch
+│   │   ├── kiosk/
+│   │   │   └── index.tsx    # Passenger rating kiosk screen
+│   │   └── admin/
+│   │       ├── _layout.tsx  # Admin navigation stack
+│   │       ├── index.tsx    # Staff login screen
+│   │       ├── dashboard.tsx# Feedback metrics & analytics
+│   │       ├── select-flight.tsx # Flight search & assignment
+│   │       └── staff.tsx    # Staff profile & security settings
+│   ├── components/          # Reusable UI components (AppButton, AppCard, HgsFooter, etc.)
+│   ├── features/
+│   │   └── session/         # Active flight & device SessionContext
+│   ├── locales/             # i18n translation files (en.ts, vi.ts)
+│   ├── services/
+│   │   ├── api/             # API modules (auth, devices, evaluations, flights, reasons)
+│   │   ├── apiClient.ts     # Axios instance with JWT refresh interceptors
+│   │   ├── mockData.ts      # Offline/fallback mock data
+│   │   └── storage.ts       # Secure storage abstraction
+│   ├── theme/               # HGS color palette, typography & spacing
+│   └── tw/                  # NativeWind Tailwind utility wrappers
+├── app.json                 # Expo application configuration & plugins
+├── bun.lock                 # Bun lockfile
+└── package.json             # Project dependencies & scripts
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-### Other setup steps
+## 🚀 Getting Started
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+### Prerequisites
+- [Bun](https://bun.sh/) (Recommended runtime & package manager) or [Node.js](https://nodejs.org/) LTS (v20+) with `npm`
+- [Expo CLI](https://docs.expo.dev/more/expo-cli/) (`npx expo`)
+- Android Studio / Xcode (for running native simulators or development builds)
 
-## Learn more
+### 1. Installation
 
-To learn more about developing your project with Expo, look at the following resources:
+Clone the repository and install dependencies using **Bun** (recommended) or **npm**:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+# Using Bun (Recommended)
+bun install
 
-## Join the community
+# Or using npm
+npm install
+```
 
-Join our community of developers creating universal apps.
+### 2. Environment Configuration
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Copy the example environment file and configure your API endpoint:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```env
+# Backend API Base URL
+EXPO_PUBLIC_API_BASE_URL=https://your-api-domain.vn/api/v1/
+```
+
+> **Note:** In Expo SDK 50+, variables prefixed with `EXPO_PUBLIC_` are automatically exposed to the client bundle.
+
+### 3. Running the App
+
+Start the Expo development server:
+
+```bash
+# Using Bun
+bun start
+
+# Using npm
+npm start
+```
+
+Or run directly on your target platform:
+
+- **Android Device / Emulator**:
+  ```bash
+  # Bun
+  bun run android
+
+  # npm
+  npm run android
+  ```
+
+- **iOS Simulator / Device**:
+  ```bash
+  # Bun
+  bun run ios
+
+  # npm
+  npm run ios
+  ```
+
+- **Web Browser (Kiosk Preview)**:
+  ```bash
+  # Bun
+  bun run web
+
+  # npm
+  npm run web
+  ```
+
+---
+
+## 🔐 Admin Access & Default Credentials
+
+To configure a tablet for a flight counter:
+1. On the Kiosk screen, tap the **Settings / Lock** icon or secret header trigger to open the Admin PIN prompt.
+2. Default Developer/Admin PIN: `123456` (or `1234`).
+3. Select the operating flight and counter.
+4. Once configured, the tablet enters locked Kiosk mode for passenger feedback.
+5. Inactivity timeout will automatically return any open Admin pages back to the Kiosk screen after 60 seconds.
+
+---
+
+## 🌐 Localization (i18n)
+
+The app supports English (`en`) and Vietnamese (`vi`).
+- Translation keys are located in [src/locales/vi.ts](file:///d:/projects/expo-test/rating-app-v1/src/locales/vi.ts) and [src/locales/en.ts](file:///d:/projects/expo-test/rating-app-v1/src/locales/en.ts).
+- Switch languages anytime via the top-right flag toggle button on the Kiosk screen.
+
+---
+
+## 📜 Available Scripts
+
+| Bun Command | npm Command | Description |
+| :--- | :--- | :--- |
+| `bun start` | `npm start` (or `npx expo start`) | Starts the Expo development server |
+| `bun run android` | `npm run android` | Builds and runs the app on Android |
+| `bun run ios` | `npm run ios` | Builds and runs the app on iOS |
+| `bun run web` | `npm run web` | Launches the app in a web browser |
+| `bun run lint` | `npm run lint` | Runs ESLint / Expo lint checks |
+
+---
+
+## 📄 License
+
+This project is proprietary and maintained for Hanoi Ground Services (HGS). All rights reserved.
