@@ -48,11 +48,11 @@ export const mockFlights: Flight[] = [
 ];
 
 export const mockReasons: Reason[] = [
-  { id: 1, label: 'Queue too long' },
-  { id: 2, label: 'Staff not helpful' },
-  { id: 3, label: 'Process unclear' },
-  { id: 4, label: 'Equipment issue' },
-  { id: 5, label: 'Language barrier' },
+  { id: 1, label: 'Thời gian chờ lâu / Queue too long' },
+  { id: 2, label: 'Thái độ nhân viên / Staff not helpful' },
+  { id: 3, label: 'Quy trình chưa rõ ràng / Process unclear' },
+  { id: 4, label: 'Sự cố thiết bị / Equipment issue' },
+  { id: 5, label: 'Rào cản ngôn ngữ / Language barrier' },
 ];
 
 export const mockEvaluations: Evaluation[] = [

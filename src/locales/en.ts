@@ -26,7 +26,7 @@ export default {
   loadingFeedbackKiosk: 'Loading feedback kiosk...',
 
   // === Kiosk Screen ===
-  passengerFeedback: 'Ý kiến của hành khách\nPassenger Feedback',
+  passengerFeedback: 'Đánh giá của hành khách - Passenger Feedback',
   shareExperience: 'Vui lòng chia sẻ trải nghiệm dịch vụ của quý khách.',
   activeFlight: 'Chuyến bay',
   checkInLocation: 'Quầy thủ tục',
@@ -43,7 +43,7 @@ export default {
   selectMultiple: 'Chọn nhiều mục',
   submitFeedback: 'Gửi phản hồi / Submit Feedback',
   thankYou: 'Cảm ơn quý khách!\nThank You!',
-  thankYouMessage: 'Phản hồi của quý khách giúp chúng tôi không ngừng nâng cao chất lượng dịch vụ. Chúc quý khách có chuyến bay an toàn và thoải mái!\nYour feedback helps us continuously elevate our service quality. Have a safe and pleasant flight!',
+  thankYouMessage: 'Chúc quý khách có chuyến bay an toàn và dễ chịu!\nHave a safe and pleasant flight!',
   submitAnother: 'Đánh giá khác / Submit Another Rating',
 
   // === Kiosk Admin PIN Modal ===

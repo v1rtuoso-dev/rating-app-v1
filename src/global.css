@@ -4,6 +4,10 @@
 
 @layer theme {
   @theme {
+    --font-sans: "SVN-PFDinTextPro-CondensedBold";
+    --font-serif: "SVN-PFDinTextPro-CondensedBold";
+    --font-mono: "SVN-PFDinTextPro-CondensedBold";
+
     /* Custom line heights for React Native */
     --text-xs--line-height: calc(1.25em / 0.75);
     --text-sm--line-height: calc(1.25em / 0.875);
@@ -27,18 +31,18 @@
 
 @media android {
   :root {
-    --font-mono: monospace;
-    --font-rounded: normal;
-    --font-serif: serif;
-    --font-sans: normal;
+    --font-mono: SVN-PFDinTextPro-Regular;
+    --font-rounded: SVN-PFDinTextPro-Regular;
+    --font-serif: SVN-PFDinTextPro-Regular;
+    --font-sans: SVN-PFDinTextPro-Regular;
   }
 }
 
 @media ios {
   :root {
-    --font-mono: ui-monospace;
-    --font-serif: ui-serif;
-    --font-sans: system-ui;
-    --font-rounded: ui-rounded;
+    --font-mono: SVN-PFDinTextPro-Regular;
+    --font-serif: SVN-PFDinTextPro-Regular;
+    --font-sans: SVN-PFDinTextPro-Regular;
+    --font-rounded: SVN-PFDinTextPro-Regular;
   }
 }

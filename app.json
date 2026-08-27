@@ -42,6 +42,19 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/Fonts/SVN-PFDinTextPro-CondensedBold.otf",
+            "./assets/Fonts/SVN-PFDinTextPro-Regular.otf",
+            "./assets/Fonts/SVN-PFDinTextPro-Medium.otf",
+            "./assets/Fonts/SVN-PFDinTextPro-Bold.otf",
+            "./assets/Fonts/SVN-PFDinTextPro-Light.otf",
+            "./assets/Fonts/SVN-PFDinTextPro-Italic.otf"
+          ]
+        }
       ]
     ],
     "experiments": {

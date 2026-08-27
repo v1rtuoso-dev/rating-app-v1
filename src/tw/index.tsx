@@ -32,8 +32,12 @@ export const View = (props: ViewProps) => {
 };
 View.displayName = 'CSS(View)';
 
+const BaseText = React.forwardRef<RNText, React.ComponentProps<typeof RNText>>((props, ref) => {
+  return <RNText ref={ref} {...props} style={[props.style, { fontFamily: 'SVN-PFDinTextPro-CondensedBold', fontWeight: 'normal' }]} />;
+});
+
 export const Text = (props: React.ComponentProps<typeof RNText> & { className?: string }) => {
-  return (useCssElement as any)(RNText, props, { className: 'style' });
+  return (useCssElement as any)(BaseText, props, { className: 'style' });
 };
 Text.displayName = 'CSS(Text)';
 
@@ -59,8 +63,12 @@ export const TouchableOpacity = (
 };
 TouchableOpacity.displayName = 'CSS(TouchableOpacity)';
 
+const BaseTextInput = React.forwardRef<RNTextInput, React.ComponentProps<typeof RNTextInput>>((props, ref) => {
+  return <RNTextInput ref={ref} {...props} style={[{ fontFamily: 'SVN-PFDinTextPro-CondensedBold' }, props.style]} />;
+});
+
 export const TextInput = (props: React.ComponentProps<typeof RNTextInput> & { className?: string }) => {
-  return (useCssElement as any)(RNTextInput, props, { className: 'style' });
+  return (useCssElement as any)(BaseTextInput, props, { className: 'style' });
 };
 TextInput.displayName = 'CSS(TextInput)';
 

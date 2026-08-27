@@ -15,8 +15,8 @@ export function AppButton({ title, onPress, variant = 'primary', fullWidth = tru
   const isPrimary = variant === 'primary';
   const isSecondary = variant === 'secondary';
 
-  const bgColor = isPrimary ? '#17479E' : isSecondary ? '#e2e8f0' : '#ffffff';
-  const borderColor = isPrimary ? '#17479E' : '#cbd5e1';
+  const bgColor = isPrimary ? '#1E4CA1' : isSecondary ? '#e2e8f0' : '#ffffff';
+  const borderColor = isPrimary ? '#1E4CA1' : '#cbd5e1';
   const textColor = isPrimary ? '#ffffff' : '#1e293b';
 
   return (
@@ -37,7 +37,7 @@ export function AppButton({ title, onPress, variant = 'primary', fullWidth = tru
           <Icon name={icon} size={22} color={textColor} />
         </View>
       ) : null}
-      <Text selectable className="text-lg font-bold text-center" style={{ color: textColor }}>{title}</Text>
+      <Text selectable className="text-xl md:text-2xl font-black text-center" style={{ color: textColor }}>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -120,7 +120,7 @@ export function StatusBadge({ label, color }: { label: string; color?: string })
   return (
     <View
       className="py-1.5 px-3.5 rounded-full self-start"
-      style={{ backgroundColor: color || '#17479E' }}
+      style={{ backgroundColor: color || '#1E4CA1' }}
     >
       <Text selectable className="text-white text-sm font-bold">{label}</Text>
     </View>
@@ -138,7 +138,7 @@ export function RatingOption({ label, emoji, selected, onPress }: { label: strin
       <Text
         selectable
         className="text-lg text-center"
-        style={{ color: selected ? '#17479E' : '#1e293b', fontWeight: selected ? '800' : '700' }}
+        style={{ color: selected ? '#1E4CA1' : '#1e293b', fontWeight: selected ? '800' : '700' }}
       >
         {label}
       </Text>
@@ -147,15 +147,28 @@ export function RatingOption({ label, emoji, selected, onPress }: { label: strin
 }
 
 export function ReasonChip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  const parts = label.includes(' / ')
+    ? label.split(' / ')
+    : label.includes('/')
+    ? label.split('/')
+    : label.includes('\n')
+    ? label.split('\n')
+    : label.includes(' - ')
+    ? label.split(' - ')
+    : [label];
+
+  const viPart = parts[0] ? parts[0].trim() : '';
+  const enPart = parts[1] ? parts[1].trim() : '';
+
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
       className="flex-row items-center rounded-2xl py-4 px-6 mb-1"
       style={{
-        backgroundColor: selected ? '#17479E' : '#f8fafc',
+        backgroundColor: selected ? '#1E4CA1' : '#f8fafc',
         borderWidth: 2,
-        borderColor: selected ? '#17479E' : '#cbd5e1',
+        borderColor: selected ? '#FF8947' : '#cbd5e1',
         elevation: selected ? 2 : 1,
       }}
     >
@@ -168,16 +181,27 @@ export function ReasonChip({ label, selected, onPress }: { label: string; select
         }}
       >
         {selected ? (
-          <Icon name="check" size={18} color="#17479E" />
+          <Icon name="check" size={18} color="#1E4CA1" />
         ) : null}
       </View>
-      <Text
-        selectable
-        className="text-lg flex-1"
-        style={{ color: selected ? '#ffffff' : '#0f172a', fontWeight: '800' }}
-      >
-        {label}
-      </Text>
+      <View className="flex-1">
+        <Text
+          selectable
+          className="text-xl md:text-2xl font-black"
+          style={{ color: selected ? '#ffffff' : '#1E4CA1' }}
+        >
+          {viPart}
+        </Text>
+        {enPart ? (
+          <Text
+            selectable
+            className="text-xl md:text-2xl font-black mt-0.5"
+            style={{ color: '#FF8947' }}
+          >
+            {enPart}
+          </Text>
+        ) : null}
+      </View>
     </TouchableOpacity>
   );
 }
